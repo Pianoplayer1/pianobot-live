@@ -46,11 +46,11 @@ class Awards(Cog):
         getLogger('commands.awards').info('Raw data: %s', data_raw)
 
         if 'xp' in sort_by:
-            data_raw.sort(key=lambda x: (x[3], x[1], x[2]), reverse=True)
+            data_raw.sort(key=lambda x: (x[3], x[1], x[2]))
         elif 'war' in sort_by:
-            data_raw.sort(key=lambda x: (x[2], x[1], x[3]), reverse=True)
+            data_raw.sort(key=lambda x: (x[2], x[1], x[3]))
         else:
-            data_raw.sort(key=lambda x: (x[1], x[2], x[3]), reverse=True)
+            data_raw.sort(key=lambda x: (x[1], x[2], x[3]))
 
         data = [[d[0], str(d[1]), str(d[2]), display_full(d[3])] for d in data_raw]
 
