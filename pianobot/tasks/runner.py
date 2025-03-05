@@ -7,9 +7,11 @@ from typing import Any, Callable, Coroutine, TYPE_CHECKING
 from discord.ext.tasks import loop
 
 from pianobot.tasks.guild_activity import guild_activity
+from pianobot.tasks.guild_awards import guild_awards
 from pianobot.tasks.guild_xp import guild_xp
 from pianobot.tasks.member_activity import member_activity
 from pianobot.tasks.members import members
+from pianobot.tasks.players import players
 from pianobot.tasks.territories import territories
 from pianobot.tasks.worlds import worlds
 
@@ -39,6 +41,7 @@ class TaskRunner:
         if self.bot.enable_tracking is True:
             await self._run_task(territories, 'Territory')
         await self._run_task(worlds, 'World')
+        await self._run_task(players, 'Player')
 
     @loop(seconds=60)
     async def _loop_1m(self) -> None:
@@ -47,5 +50,6 @@ class TaskRunner:
     @loop(seconds=300)
     async def _loop_5m(self) -> None:
         await self._run_task(guild_activity, 'Guild Activity')
+        await self._run_task(guild_awards, 'Guild Awards')
         await self._run_task(guild_xp, 'Guild XP')
         await self._run_task(members, 'Member')

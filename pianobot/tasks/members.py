@@ -4,7 +4,7 @@ from logging import getLogger
 from typing import TYPE_CHECKING
 
 from corkus.errors import CorkusException
-from discord import Embed
+from discord import Embed, Webhook
 from discord.utils import format_dt
 
 from pianobot.db.members import Member
@@ -126,4 +126,5 @@ async def send_embed(bot: Pianobot, *, title: str, content: str, color: int, uui
     )
     embed.set_thumbnail(url=f'https://mc-heads.net/avatar/{uuid}')
     if bot.member_update_channel is not None:
-        await bot.member_update_channel.send(embed=embed)
+        webhook = Webhook.from_url(bot.member_update_channel, session=bot.session)
+        await webhook.send(embed=embed, username='Eden Guild Log', avatar_url='https://cdn.discordapp.com/avatars/861602324543307786/83f879567954aee29bc9fd534bc05b1f.webp')

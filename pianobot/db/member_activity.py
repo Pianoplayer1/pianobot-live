@@ -23,7 +23,7 @@ class MemberActivityTable:
 
     async def get(self, week: str) -> dict[str, int]:
         results = await self._con.query('SELECT * FROM member_activity')
-        pos = (await self.get_weeks()).index(week) + 1
+        pos = (await self.get_weeks()).index(week)
         return {row[0]: row[pos] for row in results}
 
     async def get_usernames(self) -> list[str]:

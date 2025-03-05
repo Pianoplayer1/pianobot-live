@@ -76,14 +76,15 @@ async def paginator(
     separator_rows: int = 5,
     enum: bool = True,
     message: Message | None = None,
+    start_descending: bool = True,
 ) -> None:
     if revert_option:
-        ascending_data = table(columns, data, separator_rows, page_rows, enum, '(Ascending Order)')
+        ascending_data = table(columns.copy(), data, separator_rows, page_rows, enum, '(Ascending Order)')
         data.reverse()
         descending_data = table(
             columns, data, separator_rows, page_rows, enum, '(Descending Order)'
         )
-        initial_data = descending_data
+        initial_data = descending_data if start_descending else ascending_data
         view = Buttons(descending_data, ascending_data) if len(descending_data) > 1 else None
     else:
         initial_data = table(columns, data, separator_rows, page_rows, enum)
@@ -127,7 +128,7 @@ def table(
             message[page] += f' {column.ljust(columns[column] - 1)}│'
 
         for row in data:
-            if count == 0 or seperator != 0 and (count - page * page_len) % seperator == 0:
+            if count % page_len == 0 or seperator != 0 and (count - page * page_len) % seperator == 0:
                 message[page] += '\n├'
                 if enum:
                     message[page] += '─────'

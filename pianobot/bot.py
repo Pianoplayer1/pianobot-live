@@ -9,7 +9,7 @@ from discord.ext.commands.errors import ExtensionFailed
 
 from pianobot.db.db_manager import DBManager
 from pianobot.tasks import TaskRunner
-from pianobot.utils import get_prefix
+from pianobot.utils import DiscordLogHandler, get_prefix
 
 
 class Pianobot(Bot):
@@ -18,8 +18,8 @@ class Pianobot(Bot):
     enable_tracking: bool
     logger: Logger
     session: ClientSession
-    member_update_channel: TextChannel | None
-    xp_tracking_channel: TextChannel | None
+    member_update_channel: str | None
+    xp_tracking_channel: str | None
 
     def __init__(self) -> None:
         intents = Intents.default()
@@ -63,19 +63,21 @@ class Pianobot(Bot):
                     self.logger.warning('Skipped %s.%s: %s', folder, extension, exc.__cause__)
 
     async def on_ready(self) -> None:
-        self.member_update_channel = None
-        member_update_channel = self.get_channel(int(getenv('MEMBER_CHANNEL', 0)))
-        if isinstance(member_update_channel, TextChannel):
-            self.member_update_channel = member_update_channel
-        elif getenv('MEMBER_CHANNEL') is not None:
-            self.logger.warning('Member update channel %s not found', getenv('MEMBER_CHANNEL'))
+        self.member_update_channel = getenv('MEMBER_CHANNEL', '')
+        # member_update_channel = self.get_channel(int(getenv('MEMBER_CHANNEL', 0)))
+        # if isinstance(member_update_channel, TextChannel):
+        #     self.member_update_channel = member_update_channel
+        # elif getenv('MEMBER_CHANNEL') is not None:
+        #     self.logger.warning('Member update channel %s not found', getenv('MEMBER_CHANNEL'))
 
-        self.xp_tracking_channel = None
-        xp_tracking_channel = self.get_channel(int(getenv('XP_CHANNEL', 0)))
-        if isinstance(xp_tracking_channel, TextChannel):
-            self.xp_tracking_channel = xp_tracking_channel
-        elif getenv('XP_CHANNEL') is not None:
-            self.logger.warning('XP tracking channel %s not found', getenv('XP_CHANNEL'))
+        self.xp_tracking_channel = getenv('XP_CHANNEL', '')
+        # xp_tracking_channel = self.get_channel(int(getenv('XP_CHANNEL', 0)))
+        # if isinstance(xp_tracking_channel, TextChannel):
+        #     self.xp_tracking_channel = xp_tracking_channel
+        # elif getenv('XP_CHANNEL') is not None:
+        #     self.logger.warning('XP tracking channel %s not found', getenv('XP_CHANNEL'))
+
+        getLogger().addHandler(DiscordLogHandler(self, 1337524156530688100))
 
         self.logger.info('Booted up')
 

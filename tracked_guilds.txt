@@ -1,9 +1,3 @@
-Cyphrus Code:CYX
-ShadowFall:Shy
-Question Mark Syndicate:QMS
-Gabameno:GBE
-Wheres The Finish:WFN
-Breadskate:BSE
 Jasmine Dragon:LEAF
 Eden:EDN
 Avicia:AVO
@@ -11,45 +5,30 @@ Atlas Inc:AIn
 Nerfuria:Nia
 LittleBunny Land:LBL
 The Broken Gasmask:TBGM
-Opus Maximus:OpM
-Tartarus Wrath:Fate
-WynnFairyTail:WFT
-Syndicate of Nyx:SYNN
 Emorians:ERN
 ForsakenLaws:FKL
-Skuc Nation:skuc
+Paladins United:PUN
 The Simple Ones:ILQ
 Lux Nova:LXA
-Forever Twilight:FXX
 Guardian of Wynn:GsW
 Idiot Co:ICo
-Crystal Iris:Cona
-Last Order:IPS
 Kingdom Foxes:Fox
-Jeus:Jeus
 The Aquarium:TAq
-Germany:DEU
 Titans Valor:ANO
 Empire of Sindria:ESI
-FlameKnights:FLK
 Nefarious Ravens:NFR
 KongoBoys:DUDE
-Blacklisted:BLA
-TVietNam:VNP
 Gopniks:GKS
 Profession Heaven:PROF
-TruthSworD:Tsd
 IceBlue Team:IBT
 busted moments:fuy
 HackForums:Hax
 Sins of Seedia:SDU
-Fuzzy Spiders:cxz
 The Mage Legacy:Mag
-The Dark Phoenix:TNI
 Aequitas:Aeq
 TheNoLifes:TNL
-Paladins United:PUN
-Achte Shadow:ASh
-SICA Team:FEU
-Gang of Fools:FOOL
-Lumina:Lumi
+TerraLune:UTL
+The Clowns:MALD
+Avaritia:AVTA
+The Dringoes:TDNO
+The Dawnbreak Dynasty:TDbD

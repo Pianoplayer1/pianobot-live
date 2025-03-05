@@ -18,6 +18,7 @@ async def member_activity(bot: Pianobot) -> None:
             'Error when fetching guild data of `Eden` and list of online players: %s', e
         )
         return
-    online_members = [m.username for m in guild.members if player_list.is_player_online(m)]
+    players = {player.username for player in player_list.players}
+    online_members = [m.username for m in guild.members if m.username in players]
     if len(online_members) > 0:
         await bot.database.member_activity.add(online_members)

@@ -1,9 +1,9 @@
 from datetime import datetime, timezone
 from math import floor
 
-from aiohttp import ClientSession
 from corkus.errors import BadRequest
-from discord import Embed
+from corkus.objects import PlayerTag
+from discord import Colour, Embed
 from discord.ext.commands import Bot, Cog, Context, command
 
 from pianobot import Pianobot
@@ -28,79 +28,59 @@ class Sus(Cog):
                 await ctx.send('Not a valid Wynncraft player!')
                 return
 
-            first_hypixel_login = await hypixel_api(self.bot.session, player_data.uuid.string())
+            embed = Embed(description=f'## Suspiciousness of {player_data.username}: ', timestamp=datetime.now(timezone.utc))
+            embed.set_footer(text='Pianobot')
+            embed.set_thumbnail(url=f'https://visage.surgeplay.com/face/{player_data.uuid.string()}')
 
-            first_wynncraft_login = player_data.join_date
-            wynncraft_playtime = floor(player_data.playtime.raw * 4.7 / 60)
-            wynncraft_rank = player_data.tag.value
-            wynncraft_level = 0
-            wynncraft_quests = 0
-            for character in player_data.characters:
-                wynncraft_quests += len(character.quests)
-                wynncraft_level += character.combined_level
-
-            oldest_date = min(
-                date
-                for date in [
-                    first_hypixel_login,
-                    first_wynncraft_login,
-                ]
-                if date is not None
-            )
-
-            embed_fields = [
-                'Wynncraft Join Date',
-                'Wynncraft Playtime',
-                'Wynncraft Level',
-                'Wynncraft Quests',
-                'Wynncraft Rank',
-                'Minecraft Join Date',
-            ]
-            embed_values = [
-                first_wynncraft_login.strftime('%B %d, %Y'),
-                f'{wynncraft_playtime} hours',
-                f'{wynncraft_level} (all classes)',
-                f'{wynncraft_quests} (all classes)',
-                wynncraft_rank.capitalize(),
-                f'~{oldest_date.strftime("%B %d, %Y")}',
-            ]
-            scores = [
-                min(int((datetime.now(timezone.utc) - first_wynncraft_login).days / 2), 100),
-                min(wynncraft_playtime, 100),
-                min(wynncraft_level / 10, 100),
-                min(wynncraft_quests / 2, 100),
-                50 if wynncraft_rank == 'PLAYER' else (80 if wynncraft_rank == 'VIP' else 100),
-                min(int((datetime.now(timezone.utc) - oldest_date).days / 10), 100),
-            ]
-            total_score = round(100 - sum(scores) / len(scores), 2)
-
-            embed = Embed(
-                title=f'Suspiciousness of {player_data.username}: {total_score}%',
-                description='The rating is based on following components:',
-                color=0x00FF00
-                if total_score <= 40
-                else (0xFF0000 if total_score <= 20 else 0xFFFF00),
-            )
-            embed.set_thumbnail(
-                url=f'https://mc-heads.net/avatar/{player_data.uuid.string(dashed=False)}'
-            )
-            for field, category, score in zip(embed_fields, embed_values, scores):
-                embed.add_field(name=field, value=f'{category}\n{round(100 - score, 2)}% sus')
-            await ctx.send(embed=embed)
-
-
-async def hypixel_api(session: ClientSession, uuid: str) -> datetime | None:
-    response = await (
-        await session.get(
-            'https://api.hypixel.net/player',
-            params={'key': 'd9a6b029-99ea-4620-ba52-6df35c61486b', 'uuid': uuid},
+            total_score = 0.0
+        total_score += add_embed_field(
+            embed,
+            'Join Date',
+            (datetime.now(timezone.utc) - player_data.join_date).days,
+            500,
+            player_data.join_date.strftime('%b %d, %Y'),
         )
-    ).json()
-    return (
-        datetime.fromtimestamp(response['player']['firstLogin'] / 1000, timezone.utc)
-        if response['player'] and response['player']['firstLogin']
-        else None
-    )
+        total_score += add_embed_field(
+            embed,
+            'Rank',
+            {PlayerTag.PLAYER: 50, PlayerTag.VIP: 80}.get(player_data.tag, 100),
+            100,
+            f'[{player_data.tag.value}]',
+        )
+        total_score += add_embed_field(
+            embed,
+            'Total Playtime',
+            player_data.playtime.hours(4.7),
+            500,
+            f'{floor(player_data.playtime.hours(4.7))} Hours',
+        )
+        total_score += add_embed_field(embed, 'Total Level', player_data.combined_level, 1000)
+        total_score += add_embed_field(
+            embed, 'Quests', len([q for c in player_data.characters for q in c.quests]), 300
+        )
+        total_score += add_embed_field(
+            embed,
+            'Dungeons & Raids',
+            sum([x.completed for x in player_data.dungeons + player_data.raids]),
+            200,
+        )
+        total_score /= 6
+
+        if embed.description is not None:
+            embed.description += f'{total_score:.2f}%'
+        red = 255 if total_score >= 25 else round(255 * total_score / 25)
+        green = 255 if total_score <= 75 else round(255 * (total_score - 75) / 25)
+        embed.colour = Colour((red << 16) + (green << 8))
+
+        await ctx.send(embed=embed)
+
+
+def add_embed_field(
+    embed: Embed, title: str, value: float, max_value: int, text: str | None = None
+) -> float:
+    sus_score = 100 - min(100 * value / max_value, 100)
+    embed.add_field(name=title, value=f'```hs\n{text or value:<12}\n{round(sus_score, 2)}% sus```')
+    return sus_score
 
 
 async def setup(bot: Pianobot) -> None:

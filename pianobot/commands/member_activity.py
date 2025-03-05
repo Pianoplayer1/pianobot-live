@@ -40,6 +40,8 @@ class MemberActivity(Cog):
             member = next(
                 (member for member in guild.members if member.username == username), None
             )
+            if member is None:
+                continue
             activity_data.append(
                 (
                     time,

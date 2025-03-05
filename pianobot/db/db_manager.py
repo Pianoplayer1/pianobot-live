@@ -3,9 +3,11 @@ from os import getenv
 from pianobot.db import (
     Connection,
     GuildActivityTable,
+    GuildAwardStatsTable,
     GuildXPTable,
     MemberActivityTable,
     MemberTable,
+    PlayerTable,
     ServerTable,
     TerritoryTable,
     WorldTable,
@@ -21,9 +23,11 @@ class DBManager:
             getenv('PG_USER', 'root'),
         )
         self.guild_activity = GuildActivityTable(self._con)
+        self.guild_award_stats = GuildAwardStatsTable(self._con)
         self.guild_xp = GuildXPTable(self._con)
         self.member_activity = MemberActivityTable(self._con)
         self.members = MemberTable(self._con)
+        self.players = PlayerTable(self._con)
         self.servers = ServerTable(self._con)
         self.territories = TerritoryTable(self._con)
         self.worlds = WorldTable(self._con)

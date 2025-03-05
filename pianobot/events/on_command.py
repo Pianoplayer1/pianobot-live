@@ -10,8 +10,8 @@ class OnCommand(Cog):
     @Cog.listener()
     async def on_command(self, ctx: Context[Bot]) -> None:
         self.bot.logger.info(
-            f'{ctx.guild if ctx.guild is None else ctx.guild.name} -'
-            f' {ctx.author.name}#{ctx.author.discriminator}: {ctx.message.content}'
+            f'{ctx.channel if ctx.guild is None else ctx.guild.name} -'
+            f' {ctx.author.name}: {ctx.message.content}'
         )
 
 

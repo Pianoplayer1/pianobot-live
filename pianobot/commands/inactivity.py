@@ -1,12 +1,13 @@
 from asyncio import gather
 
 from corkus.objects.member import Member
+from datetime import datetime, timezone
 from discord import Interaction, Message
 from discord.ext.commands import Bot, Cog, Context, command
 from discord.ui import Select, View, select
 
 from pianobot import Pianobot
-from pianobot.utils import format_last_seen, paginator
+from pianobot.utils import paginator
 
 
 class Inactivity(Cog):
@@ -61,13 +62,27 @@ class Inactivity(Cog):
         self, guild: str, ctx: Context[Bot], message: Message | None = None
     ) -> None:
         guild_stats = await self.bot.corkus.guild.get(guild)
+        guild_uuids = {m.uuid for m in guild_stats.members}
+        db_stats = {p.uuid: p for p in await self.bot.database.players.get_selected(guild_uuids)}
+
         inactivity_data: list[tuple[float, list[str]]] = await gather(
-            *[fetch(member) for member in guild_stats.members]
+            *[self.fetch(member, db_stats) for member in guild_stats.members]
         )
         results = [result[1] for result in sorted(inactivity_data, key=lambda item: item[0])]
 
         columns = {f'{guild} Members': 36, 'Rank': 26, 'Time Inactive': 26}
         await paginator(ctx, results, columns, message=message)
+
+    async def fetch(self, member: Member, db_stats: dict) -> tuple[float, list[str]]:
+        db_player = db_stats.get(member.uuid, None)
+        if db_player is not None:
+            raw_days, display_time = format_last_seen(False, db_player.last_seen)
+        else:
+            player = await member.fetch_player()
+            await self.bot.database.players.add(player.uuid, player.last_online)
+            raw_days, display_time = format_last_seen(player.online, player.last_online)
+
+        return raw_days, [member.username, member.rank.value.title(), display_time]
 
 
 class SelectMenu(View):
@@ -86,11 +101,25 @@ class SelectMenu(View):
         await self.cog.inactivity_for(menu.values[0], self.ctx, interaction.message)
 
 
-async def fetch(member: Member) -> tuple[float, list[str]]:
-    player = await member.fetch_player()
-    raw_days, display_time = format_last_seen(player)
-
-    return raw_days, [member.username, member.rank.value.title(), display_time]
+def format_last_seen(online: bool, last_online: datetime) -> tuple[float, str]:
+    diff = datetime.now(timezone.utc) - last_online
+    if online or diff.seconds < 30:
+        days_offline = 0.0
+        display_time = 'Online'
+    else:
+        days_offline = diff.days + (diff.seconds / 86400)
+        value = days_offline
+        unit = 'day'
+        if value < 3:
+            value *= 24
+            unit = 'hour'
+            if value < 1:
+                value *= 60
+                unit = 'minute'
+        if round(value) != 1:
+            unit += 's'
+        display_time = f'{round(value)} {unit}'
+    return days_offline, display_time
 
 
 async def setup(bot: Pianobot) -> None:

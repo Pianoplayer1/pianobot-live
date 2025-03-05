@@ -5,6 +5,9 @@ from math import floor, log10
 from typing import TYPE_CHECKING
 
 from corkus.errors import CorkusException
+from discord import Webhook
+
+from pianobot.utils import display_full
 
 if TYPE_CHECKING:
     from pianobot import Pianobot
@@ -34,16 +37,9 @@ async def guild_xp(bot: Pianobot) -> None:
 
     msg = '--------------------------------------------------------------------------------'
     for pos, (name, gxp) in enumerate(sorted(xp_diff, key=lambda item: item[1], reverse=True)):
-        msg += f'\n**#{pos + 1} {name}** — `{display(gxp)} XP | {display(gxp / 5)} XP/min`'
-    msg += f'\n**Total: ** `{display(sum([item[1] for item in xp_diff]))} XP`'
+        msg += f'\n**#{pos + 1} {name}** — `{display_full(gxp)} XP | {display_full(gxp / 5)} XP/min`'
+    msg += f'\n**Total: ** `{display_full(sum([item[1] for item in xp_diff]))} XP`'
 
     if bot.xp_tracking_channel is not None:
-        await bot.xp_tracking_channel.send(msg)
-
-
-def display(num: float) -> str:
-    names = ['', ' Thousand', ' Million', ' Billion', ' Trillion']
-    if num < 10000:
-        return str(num)
-    pos = max(0, min(len(names) - 1, int(floor(0 if num == 0 else log10(abs(num)) / 3))))
-    return f'{round(num / 10 ** (3 * pos), 2):g}{names[pos]}'
+        webhook = Webhook.from_url(bot.xp_tracking_channel, session=bot.session)
+        await webhook.send(msg, username='Eden XP Tracking', avatar_url='https://cdn.discordapp.com/avatars/861602324543307786/83f879567954aee29bc9fd534bc05b1f.webp')

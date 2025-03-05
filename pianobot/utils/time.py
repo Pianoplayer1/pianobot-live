@@ -30,3 +30,6 @@ def format_last_seen(player: Player) -> tuple[float, str]:
             unit += 's'
         display_time = f'{round(value)} {unit}'
     return days_offline, display_time
+
+def get_cycle(dt: datetime) -> str:
+    return f'{dt.year % 100}{dt.month:02}{"A" if dt.day < 15 else "B"}'
