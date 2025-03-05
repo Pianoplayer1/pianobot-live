@@ -29,6 +29,12 @@ class GuildAwardStats:
     def xp(self) -> int:
         return self._xp
 
+    def __str__(self) -> str:
+        return f'{self._username} - {self._cycle} - {self._raids} - {self._wars} - {self._xp}'
+
+    def __repr__(self) -> str:
+        return f'{self._username} - {self._cycle} - {self._raids} - {self._wars} - {self._xp}'
+
 
 class GuildAwardStatsTable:
     def __init__(self, con: Connection) -> None:
