@@ -45,15 +45,15 @@ class GuildAwardStatsTable:
 
     async def update_raids(self, username: str, cycle: str, raids: int) -> None:
         await self._con.execute(
-            'UPDATE guild_award_stats SET raids = $1 WHERE username = $2 AND cycle = $2', raids, username, cycle
+            'UPDATE guild_award_stats SET raids = $1 WHERE username = $2 AND cycle = $3', raids, username, cycle
         )
 
     async def update_wars(self, username: str, cycle: str, wars: int) -> None:
         await self._con.execute(
-            'UPDATE guild_award_stats SET wars = $1 WHERE username = $2 AND cycle = $2', wars, username, cycle
+            'UPDATE guild_award_stats SET wars = $1 WHERE username = $2 AND cycle = $3', wars, username, cycle
         )
 
     async def update_xp(self, username: str, cycle: str, xp: int) -> None:
         await self._con.execute(
-            'UPDATE guild_award_stats SET xp = $1 WHERE username = $2 AND cycle = $2', xp, username, cycle
+            'UPDATE guild_award_stats SET xp = $1 WHERE username = $2 AND cycle = $3', xp, username, cycle
         )
