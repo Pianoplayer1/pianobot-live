@@ -33,7 +33,6 @@ class Awards(Cog):
         prev_raids = {entry.username: entry.raids for entry in prev_results}
         prev_wars = {entry.username: entry.wars for entry in prev_results}
         prev_xp = {entry.username: entry.xp for entry in prev_results}
-        getLogger('commands.awards').info('Current cycle: %s, Previous cycle: %s', results, prev_results)
 
         data_raw = [
             (
@@ -44,6 +43,7 @@ class Awards(Cog):
             )
             for entry in results
         ]
+        getLogger('commands.awards').info('Raw data: %s', data_raw)
 
         if 'xp' in sort_by:
             data_raw.sort(key=lambda x: (x[3], x[1], x[2]), reverse=True)
