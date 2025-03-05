@@ -15,6 +15,8 @@ class DiscordLogHandler(Handler):
 
     def emit(self, record) -> None:
         log_entry = self.format(record)
+        if log_entry.startswith("We are being rate limited"):
+            return
         for i in range(len(log_entry) // 1990 + 1):
             try:
                 self.bot.loop.create_task(
