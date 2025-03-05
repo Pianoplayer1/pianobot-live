@@ -15,7 +15,10 @@ class DiscordLogHandler(Handler):
 
     def emit(self, record) -> None:
         log_entry = self.format(record)
-        try:
-            self.bot.loop.create_task(self.channel.send(f"```{log_entry[:1990]}```"))
-        except Exception:
-            pass
+        for i in range(len(log_entry) // 1990 + 1):
+            try:
+                self.bot.loop.create_task(
+                    self.channel.send(f"```{log_entry[i * 1990:(i + 1) * 1990]}```")
+                )
+            except Exception:
+                pass

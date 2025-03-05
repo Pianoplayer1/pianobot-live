@@ -20,7 +20,7 @@ async def worlds(bot: Pianobot) -> None:
     for server in online_players.servers:
         if server.name in world_names:
             world_names.remove(server.name)
-        else:
+        elif server.name is not None:
             await bot.database.worlds.add(server.name)
 
     for world in world_names:
