@@ -43,7 +43,6 @@ class Awards(Cog):
             )
             for entry in results
         ]
-        getLogger('commands.awards').info('Raw data: %s', data_raw)
 
         if 'xp' in sort_by:
             data_raw.sort(key=lambda x: (x[3], x[1], x[2]))
