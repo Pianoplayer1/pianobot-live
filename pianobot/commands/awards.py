@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
+from logging import getLogger
+
 from discord.ext.commands import Bot, Cog, Context, command
 from discord.utils import format_dt
 
@@ -26,6 +28,7 @@ class Awards(Cog):
         dt = datetime.now(timezone.utc)
         current_cycle = get_cycle(dt)
         prev_cycle = get_cycle(dt - timedelta(days=20 if 8 < dt.day < 15 or 22 < dt.day else 10))
+        getLogger('commands.awards').info('Current cycle: %s, Previous cycle: %s', current_cycle, prev_cycle)
         results = await self.bot.database.guild_award_stats.get_for_cycle(current_cycle)
         prev_results = await self.bot.database.guild_award_stats.get_for_cycle(prev_cycle)
         prev_raids = {entry.username: entry.raids for entry in prev_results}
