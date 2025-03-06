@@ -20,8 +20,8 @@ async def guild_awards(bot: Pianobot) -> None:
         results = await bot.database.guild_award_stats.get_for_cycle(get_cycle(dt - timedelta(days=10)))
         prev_results = await bot.database.guild_award_stats.get_for_cycle(get_cycle(dt - timedelta(days=20)))
 
-        prev_raids = {entry.username: entry.raids for entry in prev_results}
-        raid_res = [(entry.username, entry.raids - prev_raids.get(entry.username, 0)) for entry in results]
+        prev_raids = {entry.username: entry.raid_count for entry in prev_results}
+        raid_res = [(entry.username, entry.raid_count - prev_raids.get(entry.username, 0)) for entry in results]
         raid_res.sort(key=lambda x: x[1], reverse=True)
 
         prev_wars = {entry.username: entry.wars for entry in prev_results}
@@ -47,15 +47,17 @@ async def update_for_cycle(bot: Pianobot, cycle: str, prev_cycle: str | None = N
 
     db_result = await bot.database.guild_award_stats.get_for_cycle(cycle)
     db_stats = {entry.username: entry for entry in db_result}
-    xp_per_raid = 100 / 3 * (1.15 ** guild.level - 1)
+    xp_per_raid = int(100 / 3 * (1.15 ** guild.level - 1))
 
+    guild_raid_results: dict[str, list[str]] = {}
+    guild_raid_extras: list[str] = []
     for member in guild_members:
         if member.username not in db_stats:
-            raids = 0
+            raids = {}
             wars = 0
             try:
                 player = await bot.corkus.player.getv3(member.uuid)
-                raids = player.get('globalData', {}).get('raids', {}).get('total', 0)
+                raids = player.get('globalData', {}).get('raids', {}).get('list', {})
                 wars = player.get('globalData', {}).get('wars', 0)
             except CorkusException as e:
                 getLogger('tasks.guild_awards').warning(
@@ -66,27 +68,38 @@ async def update_for_cycle(bot: Pianobot, cycle: str, prev_cycle: str | None = N
                 await bot.database.guild_award_stats.add(member.username, prev_cycle, raids, wars, member.contributed_xp)
         else:
             db_stat = db_stats[member.username]
+            xp_diff = member.contributed_xp - db_stat.xp
             if member.is_online or member.contributed_xp != db_stat.xp:
                 try:
                     player = await bot.corkus.player.getv3(member.uuid)
-                    raids = player.get('globalData', {}).get('raids', {}).get('total', None)
-                    if raids is not None and raids != db_stat.raids:
-                        if member.contributed_xp - db_stat.xp >= xp_per_raid:
-                            getLogger('tasks.guild_awards').info(
-                                'Possible guild raid: %s with %d xp',
-                                member.username,
-                                member.contributed_xp - db_stat.xp,
-                            )
-                        await bot.database.guild_award_stats.update_raids(member.username, cycle, raids)
+                    raids = player.get('globalData', {}).get('raids', {})
+                    if raids.get('total', 0) != db_stat.raid_count:
+                        await bot.database.guild_award_stats.update_raids(member.username, cycle, raids.get('list', {}))
                     wars = player.get('globalData', {}).get('wars', None)
                     if wars is not None and wars != db_stat.wars:
                         await bot.database.guild_award_stats.update_wars(member.username, cycle, wars)
+                    if xp_diff >= xp_per_raid and xp_diff < 2 * xp_per_raid:
+                        raid = next((r for r, c in raids.get('list', {}).items() if c - db_stat.raids[r] == 1), None)
+                        if raid is not None:
+                            guild_raid_results.setdefault(raid, []).append(member.username)
+                        else:
+                            guild_raid_extras.append(member.username)
                 except CorkusException as e:
                     getLogger('tasks.guild_awards').warning(
                         'Error when fetching player data of `%s`: %s', member.username, e
                     )
                 if member.contributed_xp != db_stat.xp:
                     await bot.database.guild_award_stats.update_xp(member.username, cycle, member.contributed_xp)
+
+    for raid, members in guild_raid_results.items():
+        for i in range(len(members) // 4):
+            current_members = members[i * 4: (i + 1) * 4]
+            while len(current_members) < 4:
+                try:
+                    current_members.append(guild_raid_extras.pop())
+                except IndexError:
+                    break
+            getLogger('tasks.guild_awards').info('Raid `%s` winners: %s', raid, current_members)
 
 async def send_results(bot: Pianobot, cycle: str, results: list[list[tuple[str, int]]]) -> None:
     embed = Embed(title=f'Final award results for promotion cycle  `{cycle}`')

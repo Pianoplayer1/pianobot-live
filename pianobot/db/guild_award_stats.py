@@ -2,12 +2,27 @@ from pianobot.db import Connection
 
 
 class GuildAwardStats:
-    def __init__(self, username: str, cycle: str, raids: int, wars: int, xp: int) -> None:
+    def __init__(
+        self,
+        username: str,
+        cycle: str,
+        raids: int,
+        wars: int,
+        xp: int,
+        notg: int,
+        nol: int,
+        tcc: int,
+        tna: int,
+    ) -> None:
         self._username = username
         self._cycle = cycle
         self._raids = raids
         self._wars = wars
         self._xp = xp
+        self._notg = notg
+        self._nol = nol
+        self._tcc = tcc
+        self._tna = tna
 
     @property
     def username(self) -> str:
@@ -18,8 +33,17 @@ class GuildAwardStats:
         return self._cycle
 
     @property
-    def raids(self) -> int:
+    def raid_count(self) -> int:
         return self._raids
+
+    @property
+    def raids(self) -> dict[str, int]:
+        return {
+            'Nest of the Grootslangs': self._notg,
+            'Orphion\'s Nexus of Light': self._nol,
+            'The Canyon Colossus': self._tcc,
+            'The Nameless Anomaly': self._tna,
+        }
 
     @property
     def wars(self) -> int:
@@ -29,37 +53,58 @@ class GuildAwardStats:
     def xp(self) -> int:
         return self._xp
 
-    def __str__(self) -> str:
-        return f'{self._username} - {self._cycle} - {self._raids} - {self._wars} - {self._xp}'
-
-    def __repr__(self) -> str:
-        return f'{self._username} - {self._cycle} - {self._raids} - {self._wars} - {self._xp}'
-
 
 class GuildAwardStatsTable:
     def __init__(self, con: Connection) -> None:
         self._con = con
 
-    async def add(self, username: str, cycle: str, raids: int, wars: int, xp: int) -> None:
+    async def add(
+        self, username: str, cycle: str, raids: dict[str, int], wars: int, xp: int
+    ) -> None:
         await self._con.execute(
-            'INSERT INTO guild_award_stats VALUES ($1, $2, $3, $4, $5)', username, cycle, raids, wars, xp
+            'INSERT INTO guild_award_stats VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+            username,
+            cycle,
+            sum(raids.values()),
+            wars,
+            xp,
+            raids.get('Nest of the Grootslangs', 0),
+            raids.get('Orphion\'s Nexus of Light', 0),
+            raids.get('The Canyon Colossus', 0),
+            raids.get('The Nameless Anomaly', 0),
         )
 
     async def get_for_cycle(self, cycle: str) -> list[GuildAwardStats]:
         result = await self._con.query('SELECT * FROM guild_award_stats WHERE cycle = $1', cycle)
         return [GuildAwardStats(*row) for row in result]
 
-    async def update_raids(self, username: str, cycle: str, raids: int) -> None:
+    async def update_raids(self, username: str, cycle: str, raids: dict[str, int]) -> None:
         await self._con.execute(
-            'UPDATE guild_award_stats SET raids = $1 WHERE username = $2 AND cycle = $3', raids, username, cycle
+            (
+                'UPDATE guild_award_stats SET raids = $1, notg = $2, nol = $3,'
+                ' tcc = $4, tna = $5 WHERE username = $6 AND cycle = $7'
+            ),
+            sum(raids.values()),
+            raids.get('Nest of the Grootslangs', 0),
+            raids.get('Orphion\'s Nexus of Light', 0),
+            raids.get('The Canyon Colossus', 0),
+            raids.get('The Nameless Anomaly', 0),
+            username,
+            cycle,
         )
 
     async def update_wars(self, username: str, cycle: str, wars: int) -> None:
         await self._con.execute(
-            'UPDATE guild_award_stats SET wars = $1 WHERE username = $2 AND cycle = $3', wars, username, cycle
+            'UPDATE guild_award_stats SET wars = $1 WHERE username = $2 AND cycle = $3',
+            wars,
+            username,
+            cycle,
         )
 
     async def update_xp(self, username: str, cycle: str, xp: int) -> None:
         await self._con.execute(
-            'UPDATE guild_award_stats SET xp = $1 WHERE username = $2 AND cycle = $3', xp, username, cycle
+            'UPDATE guild_award_stats SET xp = $1 WHERE username = $2 AND cycle = $3',
+            xp,
+            username,
+            cycle,
         )
