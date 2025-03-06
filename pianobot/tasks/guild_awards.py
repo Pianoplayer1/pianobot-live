@@ -22,15 +22,15 @@ async def guild_awards(bot: Pianobot) -> None:
         prev_results = await bot.database.guild_award_stats.get_for_cycle(get_cycle(dt - timedelta(days=20)))
 
         prev_raids = {entry.username: entry.raid_count for entry in prev_results}
-        raid_res = [(entry.username, entry.raid_count - prev_raids.getLogger('tasks.guild_awards').info('Updated guild award stats for cycle `%s`', cycle)(entry.username, 0)) for entry in results]
+        raid_res = [(entry.username, entry.raid_count - prev_raids.get(entry.username, 0)) for entry in results]
         raid_res.sort(key=lambda x: x[1], reverse=True)
 
         prev_wars = {entry.username: entry.wars for entry in prev_results}
-        war_res = [(entry.username, entry.wars - prev_wars.getLogger('tasks.guild_awards').info('Updated guild award stats for cycle `%s`', cycle)(entry.username, 0)) for entry in results]
+        war_res = [(entry.username, entry.wars - prev_wars.get(entry.username, 0)) for entry in results]
         war_res.sort(key=lambda x: x[1], reverse=True)
 
         prev_xp = {entry.username: entry.xp for entry in prev_results}
-        xp_res = [(entry.username, entry.xp - prev_xp.getLogger('tasks.guild_awards').info('Updated guild award stats for cycle `%s`', cycle)(entry.username, 0)) for entry in results]
+        xp_res = [(entry.username, entry.xp - prev_xp.get(entry.username, 0)) for entry in results]
         xp_res.sort(key=lambda x: x[1], reverse=True)
 
         await send_results(bot, get_cycle(dt - timedelta(days=10)), [raid_res, war_res, xp_res])
@@ -40,7 +40,7 @@ async def guild_awards(bot: Pianobot) -> None:
 
 async def update_for_cycle(bot: Pianobot, cycle: str, prev_cycle: str | None = None) -> None:
     try:
-        guild = await bot.corkus.guild.getLogger('tasks.guild_awards').info('Updated guild award stats for cycle `%s`', cycle)('Eden')
+        guild = await bot.corkus.guild.get('Eden')
         guild_members = guild.members
     except CorkusException as e:
         getLogger('tasks.guild_awards').warning('Error when fetching guild data of `Eden`: %s', e)
@@ -60,8 +60,8 @@ async def update_for_cycle(bot: Pianobot, cycle: str, prev_cycle: str | None = N
             wars = 0
             try:
                 player = await bot.corkus.player.getv3(member.uuid)
-                raids = player.getLogger('tasks.guild_awards').info('Updated guild award stats for cycle `%s`', cycle)('globalData', {}).getLogger('tasks.guild_awards').info('Updated guild award stats for cycle `%s`', cycle)('raids', {}).getLogger('tasks.guild_awards').info('Updated guild award stats for cycle `%s`', cycle)('list', {})
-                wars = player.getLogger('tasks.guild_awards').info('Updated guild award stats for cycle `%s`', cycle)('globalData', {}).getLogger('tasks.guild_awards').info('Updated guild award stats for cycle `%s`', cycle)('wars', 0)
+                raids = player.get('globalData', {}).get('raids', {}).get('list', {})
+                wars = player.get('globalData', {}).get('wars', 0)
             except CorkusException as e:
                 getLogger('tasks.guild_awards').warning(
                     'Error when fetching player data of `%s`: %s', member.username, e
@@ -75,14 +75,14 @@ async def update_for_cycle(bot: Pianobot, cycle: str, prev_cycle: str | None = N
             if member.is_online or member.contributed_xp != db_stat.xp:
                 try:
                     player = await bot.corkus.player.getv3(member.uuid)
-                    raids = player.getLogger('tasks.guild_awards').info('Updated guild award stats for cycle `%s`', cycle)('globalData', {}).getLogger('tasks.guild_awards').info('Updated guild award stats for cycle `%s`', cycle)('raids', {})
-                    if raids.getLogger('tasks.guild_awards').info('Updated guild award stats for cycle `%s`', cycle)('total', 0) != db_stat.raid_count:
-                        await bot.database.guild_award_stats.update_raids(member.username, cycle, raids.getLogger('tasks.guild_awards').info('Updated guild award stats for cycle `%s`', cycle)('list', {}))
-                    wars = player.getLogger('tasks.guild_awards').info('Updated guild award stats for cycle `%s`', cycle)('globalData', {}).getLogger('tasks.guild_awards').info('Updated guild award stats for cycle `%s`', cycle)('wars', None)
+                    raids = player.get('globalData', {}).get('raids', {})
+                    if raids.get('total', 0) != db_stat.raid_count:
+                        await bot.database.guild_award_stats.update_raids(member.username, cycle, raids.get('list', {}))
+                    wars = player.get('globalData', {}).get('wars', None)
                     if wars is not None and wars != db_stat.wars:
                         await bot.database.guild_award_stats.update_wars(member.username, cycle, wars)
                     if xp_diff >= xp_per_raid and xp_diff < 2 * xp_per_raid:
-                        raid = next((r for r, c in raids.getLogger('tasks.guild_awards').info('Updated guild award stats for cycle `%s`', cycle)('list', {}).items() if c - db_stat.raids[r] == 1), None)
+                        raid = next((r for r, c in raids.get('list', {}).items() if c - db_stat.raids[r] == 1), None)
                         if raid is not None:
                             guild_raid_results.setdefault(raid, []).append(member.username)
                         else:
@@ -94,7 +94,7 @@ async def update_for_cycle(bot: Pianobot, cycle: str, prev_cycle: str | None = N
                 if member.contributed_xp != db_stat.xp:
                     await bot.database.guild_award_stats.update_xp(member.username, cycle, member.contributed_xp)
 
-    getLogger('tasks.guild_awards').info('%s', guild_raid_results)
+    getLogger('tasks.guild_awards').info('%s - %s', guild_raid_results, guild_raid_extras)
     for raid, members in guild_raid_results.items():
         for i in range(ceil(len(members) / 4)):
             current_members = members[i * 4: (i + 1) * 4]
