@@ -45,7 +45,15 @@ class OnCommandError(Cog):
         elif isinstance(error, errors.CommandNotFound):
             if ctx.prefix is not None and ctx.prefix.startswith('<@'):
                 await ctx.send(f'Use `{prefix}help` for a list of things I can do.')
-            self.bot.logger.info(error.args[0])
+            self.bot.logger.debug(
+                f'{ctx.channel if ctx.guild is None else ctx.guild.name} -'
+                f' {ctx.author.name}: {error.args[0]}'
+            )
+        elif isinstance(error, errors.CommandInvokeError):
+            self.bot.logger.info(
+                f'{ctx.channel if ctx.guild is None else ctx.guild.name} -'
+                f' {ctx.author.name}: {error.args[0]}'
+            )
         else:
             getLogger('commands').warning(
                 'Ignoring exception in command %s:\n%s',

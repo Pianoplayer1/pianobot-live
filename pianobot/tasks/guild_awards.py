@@ -47,6 +47,8 @@ async def update_for_cycle(bot: Pianobot, cycle: str, prev_cycle: str | None = N
 
     db_result = await bot.database.guild_award_stats.get_for_cycle(cycle)
     db_stats = {entry.username: entry for entry in db_result}
+    prev_db_results = await bot.database.guild_award_stats.get_for_cycle(prev_cycle)
+    prev_names = {entry.username for entry in prev_db_results}
     xp_per_raid = int(100 / 3 * (1.15 ** guild.level - 1))
 
     guild_raid_results: dict[str, list[str]] = {}
@@ -64,7 +66,7 @@ async def update_for_cycle(bot: Pianobot, cycle: str, prev_cycle: str | None = N
                     'Error when fetching player data of `%s`: %s', member.username, e
                 )
             await bot.database.guild_award_stats.add(member.username, cycle, raids, wars, member.contributed_xp)
-            if prev_cycle:
+            if prev_cycle and member.username not in prev_names:
                 await bot.database.guild_award_stats.add(member.username, prev_cycle, raids, wars, member.contributed_xp)
         else:
             db_stat = db_stats[member.username]
