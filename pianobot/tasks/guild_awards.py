@@ -110,10 +110,10 @@ async def update_for_cycle(bot: Pianobot, cycle: str, prev_cycle: str | None = N
                     current_members.append(guild_raid_extras.pop())
                 except IndexError:
                     break
-            await send_embed(bot, raid, current_members, guild.level)
+            # await send_embed(bot, raid, current_members, guild.level)
     for i in range(ceil(len(guild_raid_extras) / 4)):
         current_members = guild_raid_extras[i * 4: (i + 1) * 4]
-        await send_embed(bot, None, current_members, guild.level)
+        # await send_embed(bot, None, current_members, guild.level)
 
 
 async def send_embed(bot: Pianobot, raid: str | None, players: list[str], guild_level: int) -> None:

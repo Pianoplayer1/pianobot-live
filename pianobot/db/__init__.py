@@ -5,6 +5,8 @@ from .guild_xp import GuildXPTable
 from .member_activity import MemberActivityTable
 from .members import MemberTable
 from .players import PlayerTable
+from .raid_members import RaidMemberTable
+from .raids import RaidTable
 from .servers import ServerTable
 from .territories import TerritoryTable
 from .worlds import WorldTable
