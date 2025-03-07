@@ -28,6 +28,7 @@ class TaskRunner:
     async def start_tasks(self) -> None:
         self._loop_30s.start()
         self._loop_1m.start()
+        self._loop_2m.start()
         self._loop_5m.start()
 
     async def _run_task(
