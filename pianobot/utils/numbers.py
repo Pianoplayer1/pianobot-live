@@ -1,7 +1,7 @@
 from math import floor, log10
 
 def display_short(num: float) -> str:
-    return display(num, ['', ' k', ' M', ' B', ' T'])
+    return display(num, ['', 'k', 'M', 'B', 'T'])
 
 def display_full(num: float) -> str:
     return display(num, ['', ' Thousand', ' Million', ' Billion', ' Trillion'])
