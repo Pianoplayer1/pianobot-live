@@ -1,4 +1,3 @@
-*.png
 .vscode/
 .idea/
 venv/
