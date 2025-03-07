@@ -8,6 +8,7 @@ from discord.ext.tasks import loop
 
 from pianobot.tasks.guild_activity import guild_activity
 from pianobot.tasks.guild_awards import guild_awards
+from pianobot.tasks.guild_raids import guild_raids
 from pianobot.tasks.guild_xp import guild_xp
 from pianobot.tasks.member_activity import member_activity
 from pianobot.tasks.members import members
@@ -46,6 +47,10 @@ class TaskRunner:
     @loop(seconds=60)
     async def _loop_1m(self) -> None:
         await self._run_task(member_activity, 'Member Activity')
+    
+    @loop(seconds=120)
+    async def _loop_2m(self) -> None:
+        await self._run_task(guild_raids, 'Guild Raids') 
 
     @loop(seconds=300)
     async def _loop_5m(self) -> None:
