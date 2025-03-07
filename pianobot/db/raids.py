@@ -14,8 +14,8 @@ class RaidTable:
     async def set(self, uuid: UUID, raid: str, amount: int) -> None:
         await self._con.execute(
             (
-                'INSERT INTO raids VALUES ($1, $2, $3) ON CONFLICT (uuid, raid) DO UPDATE'
-                ' SET amount = $3 WHERE uuid = $1 AND raid = $2'
+                'INSERT INTO raids VALUES ($1, $2, $3)'
+                ' ON CONFLICT (uuid, raid) DO UPDATE SET amount = EXCLUDED.amount'
             ),
             uuid,
             raid,
