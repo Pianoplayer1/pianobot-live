@@ -51,7 +51,7 @@ async def guild_raids(bot: Pianobot) -> None:
             xp_diff = member.contributed_xp - db_stats[member.uuid]
             if xp_diff > 0:
                 await bot.database.raid_members.update_xp(member.uuid, member.contributed_xp)
-                if xp_diff >= xp_per_raid:
+                if xp_per_raid <= xp_diff < 3 * xp_per_raid:
                     member_raids = await bot.database.raids.get_for_player(member.uuid)
                     potential_members[member] = member_raids
             if xp_diff > 0 or member.is_online:
@@ -75,12 +75,18 @@ async def process_members(
     ) -> None:
     results = await gather(*(process_one(bot, m, r) for m, r in potential_members.items()))
     raid_completions: dict[str, list[str]] = {}
+    unknown: list[str] = []
     for member, raid in results:
         if raid is not None:
             raid_completions.setdefault(raid, []).append(member.username)
+        else:
+            unknown.append(member.username)
+    add_unknown = len(unknown) == sum((4 - len(lst) % 4) % 4 for lst in raid_completions.values())
     for raid, members in raid_completions.items():
         for i in range(ceil(len(members) / 4)):
             current_members = members[i * 4: (i + 1) * 4]
+            while add_unknown and len(current_members) < 4:
+                current_members.append(unknown.pop())
             await send_embed(bot, raid, current_members, level)
 
 
@@ -89,7 +95,7 @@ async def process_one(
     ) -> tuple[Member, str | None]:
     response = await bot.session.get(f'https://api.wynncraft.com/v3/player/{member.uuid}')
     if response.status != 200:
-        return member, None
+        return await process_one(bot, member, old_raids, tries + 1)
     data = await response.json()
     raids = data.get('globalData', {}).get('raids', {}).get('list', {})
     if sum(raids.values()) == sum(old_raids.values()):
