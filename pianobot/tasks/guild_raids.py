@@ -52,7 +52,7 @@ async def guild_raids(bot: Pianobot) -> None:
             if xp_diff > 0:
                 await bot.database.raid_members.update_xp(member.uuid, member.contributed_xp)
                 if xp_per_raid <= xp_diff < 3 * xp_per_raid:
-                    member_raids = await bot.database.raids.get_for_player(member.uuid)
+                    member_raids = await bot.database.raids.prev_for_player(member.uuid)
                     potential_members[member] = member_raids
             if xp_diff > 0 or member.is_online:
                 try:
@@ -66,6 +66,7 @@ async def guild_raids(bot: Pianobot) -> None:
                 db_raids = await bot.database.raids.get_for_player(member.uuid)
                 for raid, amount in raids.items():
                     if amount > db_raids.get(raid, 0):
+                        await bot.database.raids.set_prev(member.uuid, raid, db_raids.get(raid, 0))
                         await bot.database.raids.set(member.uuid, raid, amount)
     bot.loop.create_task(process_members(bot, potential_members, guild.level))
 
