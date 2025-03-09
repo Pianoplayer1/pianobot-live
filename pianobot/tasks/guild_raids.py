@@ -52,8 +52,9 @@ async def guild_raids(bot: Pianobot) -> None:
             if xp_diff > 0:
                 await bot.database.raid_members.update_xp(member.uuid, member.contributed_xp)
                 if xp_per_raid <= xp_diff < 3 * xp_per_raid:
-                    member_raids = await bot.database.raids.prev_for_player(member.uuid)
-                    potential_members[member] = member_raids
+                    member_raids = await bot.database.raids.get_for_player(member.uuid)
+                    old_raids = await bot.database.raids.prev_for_player(member.uuid)
+                    potential_members[member] = (member_raids, old_raids)
             if xp_diff > 0 or member.is_online:
                 try:
                     player = await bot.corkus.player.getv3(member.uuid)
@@ -72,9 +73,11 @@ async def guild_raids(bot: Pianobot) -> None:
 
 
 async def process_members(
-        bot: Pianobot, potential_members: dict[Member, dict[str, int]], level: int
+        bot: Pianobot,
+        potential_members: dict[Member, tuple[dict[str, int], dict[str, int]]],
+        level: int,
     ) -> None:
-    results = await gather(*(process_one(bot, m, r) for m, r in potential_members.items()))
+    results = await gather(*(process_one(bot, m, *r) for m, r in potential_members.items()))
     raid_completions: dict[str, list[str]] = {}
     unknown: list[str] = []
     for member, raid in results:
@@ -92,19 +95,29 @@ async def process_members(
 
 
 async def process_one(
-        bot: Pianobot, member: Member, old_raids: dict[str, int], tries: int = 0
+        bot: Pianobot,
+        member: Member,
+        old_raids: dict[str, int],
+        old_old_raids: dict[str, int],
+        tries: int = 0,
     ) -> tuple[Member, str | None]:
     response = await bot.session.get(f'https://api.wynncraft.com/v3/player/{member.uuid}')
     if response.status != 200:
-        return await process_one(bot, member, old_raids, tries + 1)
+        return await process_one(bot, member, old_raids, old_old_raids, tries + 1)
     data = await response.json()
     raids = data.get('globalData', {}).get('raids', {}).get('list', {})
     if sum(raids.values()) == sum(old_raids.values()):
         if tries >= 2:
-            return member, None
+            return (
+                member,
+                next(
+                    (r for r, c in raids.items() if c - old_old_raids.get(r, 0) == 1),
+                    None,
+                ),
+            )
         age = int(response.headers.get('Age', '0'))
         await sleep(121 - age)
-        return await process_one(bot, member, old_raids, tries + 1)
+        return await process_one(bot, member, old_raids, old_old_raids, tries + 1)
     return member, next(r for r, c in raids.items() if c - old_raids.get(r, 0) == 1)
 
 
