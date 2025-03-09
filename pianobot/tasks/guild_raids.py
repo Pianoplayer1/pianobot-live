@@ -65,8 +65,8 @@ async def guild_raids(bot: Pianobot) -> None:
                     )
                     continue
                 db_raids = await bot.database.raids.get_for_player(member.uuid)
-                for raid, amount in raids.items():
-                    if amount > db_raids.get(raid, 0):
+                if any(amount > db_raids.get(raid, 0) for raid, amount in raids.items()):
+                    for raid, amount in raids.items():
                         await bot.database.raids.set_prev(member.uuid, raid, db_raids.get(raid, 0))
                         await bot.database.raids.set(member.uuid, raid, amount)
     bot.loop.create_task(process_members(bot, potential_members, guild.level))
