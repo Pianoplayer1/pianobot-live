@@ -92,6 +92,8 @@ async def process_members(
             while add_unknown and len(current_members) < 4:
                 current_members.append(unknown.pop())
             await send_embed(bot, raid, current_members, level)
+            for member in current_members:
+                await bot.database.raid_log.add(member.uuid, raid)
 
 
 async def process_one(

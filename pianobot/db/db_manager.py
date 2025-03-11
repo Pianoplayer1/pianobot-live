@@ -9,6 +9,7 @@ from pianobot.db import (
     MemberTable,
     PlayerTable,
     RaidTable,
+    RaidLogTable,
     RaidMemberTable,
     ServerTable,
     TerritoryTable,
@@ -30,6 +31,7 @@ class DBManager:
         self.member_activity = MemberActivityTable(self._con)
         self.members = MemberTable(self._con)
         self.players = PlayerTable(self._con)
+        self.raid_log = RaidLogTable(self._con)
         self.raid_members = RaidMemberTable(self._con)
         self.raids = RaidTable(self._con)
         self.servers = ServerTable(self._con)
