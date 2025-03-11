@@ -20,3 +20,17 @@ class RaidLogTable:
             )
         except NotNullViolationError:
             getLogger('db.raid_log').warning('Failed to add log entry for (%s, %s)', uuid, name)
+
+    async def get_new(self) -> dict[str, int]:
+        result = await self._con.query(
+            'SELECT m.name, count(*) FROM members m, raid_log l'
+            ' WHERE m.uuid = l.uuid'
+            ' AND l.timestamp >= (select timestamp from raid_log where raid_id = 1)'
+            ' GROUP BY m.name'
+        )
+        return {row[0]: row[1] for row in result}
+
+    async def reset_new(self) -> None:
+        await self._con.execute(
+            'UPDATE raid_log SET timestamp = CURRENT_TIMESTAMP WHERE raid_id = 1'
+        )
