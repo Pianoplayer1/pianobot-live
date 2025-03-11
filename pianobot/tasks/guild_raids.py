@@ -120,7 +120,7 @@ async def process_one(
         age = int(response.headers.get('Age', '0'))
         await sleep(121 - age)
         return await process_one(bot, member, old_raids, old_old_raids, tries + 1)
-    return member, next(r for r, c in raids.items() if c - old_raids.get(r, 0) == 1)
+    return member, next((r for r, c in raids.items() if c - old_raids.get(r, 0) == 1), None)
 
 
 async def send_embed(bot: Pianobot, raid: str, players: list[str], guild_level: int) -> None:
