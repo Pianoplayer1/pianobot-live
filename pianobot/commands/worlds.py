@@ -7,7 +7,7 @@ from pianobot import Pianobot
 from pianobot.utils import paginator
 
 
-class Soulpoints(Cog):
+class Worlds(Cog):
     def __init__(self, bot: Pianobot) -> None:
         self.bot = bot
 
@@ -28,7 +28,7 @@ class Soulpoints(Cog):
         data = [
             [
                 world,
-                'North America' if world.startswith('NA') else ('Europe' if world.startswith('EU') else 'Unknown'),
+                'North America' if world.startswith('NA') else ('Europe' if world.startswith('EU') else ('Asia' if world.startswith('AS') else 'Unknown')),
                 f'{floor(uptime / 3600):02}:{floor(uptime % 3600 / 60):02} hours',
             ]
             for world, uptime in worlds
@@ -38,4 +38,4 @@ class Soulpoints(Cog):
 
 
 async def setup(bot: Pianobot) -> None:
-    await bot.add_cog(Soulpoints(bot))
+    await bot.add_cog(Worlds(bot))
