@@ -14,7 +14,7 @@ class RaidTable:
     async def prev_for_player(self, uuid: UUID) -> dict[str, int]:
         result = await self._con.query(
             'SELECT raid, amount FROM prev_raids WHERE uuid = $1'
-            ' AND timestamp >= NOW() - INTERVAL 10 MINUTE',
+            ' AND timestamp >= NOW() - \'10 minutes\'::INTERVAL',
             uuid,
         )
         return {row[0]: row[1] for row in result}
