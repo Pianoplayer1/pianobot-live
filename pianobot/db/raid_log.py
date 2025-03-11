@@ -25,7 +25,7 @@ class RaidLogTable:
         result = await self._con.query(
             'SELECT m.name, count(*) FROM members m, raid_log l'
             ' WHERE m.uuid = l.uuid'
-            ' AND l.timestamp >= (select timestamp from raid_log where raid_id = 1)'
+            ' AND l.timestamp > (select timestamp from raid_log where raid_id = 1)'
             ' GROUP BY m.name'
         )
         return {row[0]: row[1] for row in result}
