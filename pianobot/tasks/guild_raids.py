@@ -119,7 +119,7 @@ async def process_one(
             return (
                 member,
                 next(
-                    (r for r, c in raids.items() if c - old_old_raids.get(r, 0) == 1),
+                    (r for r, c in raids.items() if c - old_old_raids.get(r, -2) == 1),
                     None,
                 ),
             )
