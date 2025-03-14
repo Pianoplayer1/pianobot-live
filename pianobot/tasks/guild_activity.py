@@ -1,17 +1,20 @@
 from __future__ import annotations
 
 from asyncio import gather
+from datetime import datetime, timezone, time
 from logging import getLogger
 from typing import TYPE_CHECKING
 
 from corkus import Corkus
 from corkus.errors import BadRequest, CorkusTimeoutError
-from corkus.objects.online_players import OnlinePlayers
 
 if TYPE_CHECKING:
     from pianobot import Pianobot
 
 async def guild_activity(bot: Pianobot) -> None:
+    dt = datetime.now(timezone.utc)
+    if dt.day in {1, 15} and time(0, 0) <= dt.time() < time(0, 5):
+        return
     guilds: dict[str, int | None] = {guild: None for guild in bot.tracked_guilds}
     try:
         online_players = await bot.corkus.network.online_players()
