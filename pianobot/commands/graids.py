@@ -47,7 +47,7 @@ class GuildRaids(Cog):
         else:
             now = datetime.now(timezone.utc)
             args = arg.lower().split()
-            raid = next((r for r, v in RAIDS.values() if any(s in args for s in v)), None)
+            raid = next((r for r, v in RAIDS.items() if any(s in args for s in v)), None)
             times = []
             for a in args:
                 try:

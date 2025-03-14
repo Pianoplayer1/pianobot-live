@@ -78,8 +78,6 @@ async def process_members(
         level: int,
     ) -> None:
     results = await gather(*(process_one(bot, m, *r) for m, r in potential_members.items()))
-    if results:
-        getLogger('tasks.guild_awards').info('Results: %s', results)
     raid_completions: dict[str, list[str]] = {}
     unknown: list[str] = []
     for member, raid in results:
@@ -88,6 +86,8 @@ async def process_members(
         else:
             unknown.append(member.username)
     add_unknown = len(unknown) == sum((4 - len(lst) % 4) % 4 for lst in raid_completions.values())
+    if add_unknown and results:
+        getLogger('tasks.guild_awards').warning('Unknown: %s', results)
     for raid, members in raid_completions.items():
         for i in range(ceil(len(members) / 4)):
             current_members = members[i * 4: (i + 1) * 4]
@@ -100,6 +100,8 @@ async def process_members(
                         next(m for m in potential_members.keys() if m.username == member).uuid,
                         raid,
                     )
+            else:
+                getLogger('tasks.guild_awards').warning('Raid with <4: %s', results)
 
 
 async def process_one(
