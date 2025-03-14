@@ -60,8 +60,8 @@ class GuildRaids(Cog):
                     times.append(float(a))
                 except ValueError:
                     pass
-            start = now - timedelta(days=times[0])
-            end = now - timedelta(days=times[1])
+            start = now - timedelta(days=times[0]) if times else None
+            end = now - timedelta(days=times[1]) if len(times) > 1 else None
             if raid is None:
                 results = await self.bot.database.raid_log.get_between(start, end)
             else:
