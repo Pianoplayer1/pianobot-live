@@ -21,7 +21,7 @@ RAID_COLORS = {
     'The Canyon Colossus': 0x00AAAA,
     'The Nameless Anomaly': 0x5555FF,
 }
-WEBHOOK_URL = 'https://discord.com/api/webhooks/1347509068176297984/IPbjbgIH-HuQIxUjbsULvT1mjKEn7G2i-IfBA1U_NdNqlnT001wRsbXmU-PhnOFU8rU7'
+WEBHOOK_URL = 'https://discord.com/api/webhooks/1350160463782084719/NhYzODuCuP1QuAtygwXYPQZwU7Wv88K_eAKWJvb6L2SeMrQyEM3Xc41eR_jbJY9h5TBQ'
 AVATAR_URL = 'https://cdn.discordapp.com/avatars/861602324543307786/83f879567954aee29bc9fd534bc05b1f.webp'
 
 async def guild_raids(bot: Pianobot) -> None:
