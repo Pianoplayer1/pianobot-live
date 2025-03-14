@@ -21,7 +21,11 @@ class GuildRaids(Cog):
     @command(
         brief='Returns the guild raids done by Eden members.',
         help=(
-            'This command returns the guild raids done by Eden members.'
+            'This command gives a list of completed guild raids per member.'
+            ' You can specify an interval as two decimal numbers, which will be interpreted'
+            ' as the number of days ago. Additionally, you can specify a raid to only'
+            ' show the results for that raid.\n'
+            'Example: `graids tcc 7 0.5` will show the TCCs done between 7 days and 12 hours ago.'
         ),
         name='graids',
     )
