@@ -25,8 +25,8 @@ class GuildRaids(Cog):
             'This command gives a list of completed guild raids per member.'
             ' You can specify an interval as two decimal numbers, which will be interpreted'
             ' as the number of days ago.\n'
-            'Additionally, you can specify a raid to only show the results for that raid.\n'
-            '**Example**: `graids tcc 7 0.5` will show the TCCs done between 7 days and 12 hours ago.'
+            'Additionally, you can specify a raid to only show the results for that raid.\n\n'
+            '**Example**\n`graids tcc 7 0.5` will show the TCCs done between 7 days and 12 hours ago.'
         ),
         name='graids',
         usage='[raid] [days since start] [days since end]',

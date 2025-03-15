@@ -88,8 +88,8 @@ async def send_results(bot: Pianobot, cycle: str, results: list[list[tuple[str, 
     embed = Embed(title=f'Final award results for promotion cycle  `{cycle}`')
     for title, code, result in zip(['Raids', 'Wars', 'Guild XP'], ['gss', 'js', 'less'], results):
         code_block = f'```{code}\n'
-        for i, data in enumerate(result[:3]):
-            code_block += f'{i}. {data[0]} (+{data[1]})\n'
+        for i, data in enumerate(result[:9]):
+            code_block += f'{i + 1}. {data[0]} (+{data[1]})\n'
         embed.add_field(name=title, value=code_block + '```', inline=False)
     if bot.member_update_channel is not None:
         webhook = Webhook.from_url(bot.member_update_channel, session=bot.session)
