@@ -86,7 +86,7 @@ async def process_members(
         else:
             unknown.append(member.username)
     add_unknown = len(unknown) == sum((4 - len(lst) % 4) % 4 for lst in raid_completions.values())
-    if add_unknown and results:
+    if unknown and results:
         getLogger('tasks.guild_awards').warning('Unknown: %s', results)
     for raid, members in raid_completions.items():
         for i in range(ceil(len(members) / 4)):
