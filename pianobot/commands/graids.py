@@ -74,10 +74,10 @@ class GuildRaids(Cog):
                 columns = {'Username': 22, 'Amount': 8}
                 message = f'{raid or "Guild raid"} completions'
                 if start and not end:
-                    message += f' since {format_dt(start, style="D")}:'
+                    message += f' since {format_dt(start, style="D")}'
                 elif start and end:
-                    message += f' between {format_dt(start, style="D")} and {format_dt(end, style="D")}:'
-                await ctx.send(message)
+                    message += f' between {format_dt(start, style="D")} and {format_dt(end, style="D")}'
+                await ctx.send(message + ':')
                 await paginator(ctx, data, columns, page_rows=20, separator_rows=0, enum=False)
             else:
                 await ctx.send('No guild raids in this interval.')
