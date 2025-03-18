@@ -32,8 +32,8 @@ class GuildRaids(Cog):
         usage='[raid] [days since start] [days since end]',
     )
     async def graids(self, ctx: Context[Bot], *, arg: str = '') -> None:
-        args = arg.lower().split() or ['']
-        if args[0] in ('p', 'pending'):
+        args = arg.split() or ['']
+        if args[0].lower() in ('p', 'pending'):
             raids = await self.bot.database.raid_members.get_pending()
             if raids:
                 data = [
@@ -44,7 +44,7 @@ class GuildRaids(Cog):
                 await paginator(ctx, data, columns, page_rows=20, separator_rows=0, enum=False)
             else:
                 await ctx.send('No new raids have been logged.')
-        elif args[0] in ('r', 'reset') and ctx.guild:
+        elif args[0].lower() in ('r', 'reset') and ctx.guild:
             if len(args) < 2:
                 await ctx.send('Please specify a user to reset the raids for.')
             elif ctx.author.guild_permissions.administrator:
@@ -54,6 +54,7 @@ class GuildRaids(Cog):
                 await ctx.send('You do not have the required permissions to reset the raids.')
             return
         else:
+            args = list(map(str.lower, args))
             now = datetime.now(timezone.utc)
             raid = next((r for r, v in RAIDS.items() if any(s in args for s in v)), None)
             times = []
