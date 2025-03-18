@@ -25,8 +25,7 @@ class RaidLogTable:
     async def get_between(self, start: datetime | None = None, end: datetime | None = None) -> dict[str, int]:
         result = await self._con.query(
             'SELECT m.name, count(*) FROM members m, raid_log l'
-            ' WHERE m.uuid = l.uuid AND raid_id > 1'
-            ' AND l.timestamp >= $1 AND l.timestamp < $2'
+            ' WHERE m.uuid = l.uuid AND l.timestamp >= $1 AND l.timestamp < $2'
             ' GROUP BY m.name',
             start or datetime.min,
             end or datetime.max,
@@ -49,17 +48,3 @@ class RaidLogTable:
             end or datetime.max,
         )
         return {row[0]: row[1] for row in result}
-
-    async def get_new(self) -> dict[str, int]:
-        result = await self._con.query(
-            'SELECT m.name, count(*) FROM members m, raid_log l'
-            ' WHERE m.uuid = l.uuid'
-            ' AND l.timestamp > (select timestamp from raid_log where raid_id = 1)'
-            ' GROUP BY m.name'
-        )
-        return {row[0]: row[1] for row in result}
-
-    async def reset_new(self) -> None:
-        await self._con.execute(
-            'UPDATE raid_log SET timestamp = CURRENT_TIMESTAMP WHERE raid_id = 1'
-        )

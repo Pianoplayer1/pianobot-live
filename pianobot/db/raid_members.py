@@ -14,6 +14,25 @@ class RaidMemberTable:
     async def add(self, uuid: UUID, xp: int) -> None:
         await self._con.execute('INSERT INTO raid_members (uuid, xp) VALUES ($1, $2)', uuid, xp)
 
+    async def add_raid(self, uuid: UUID) -> None:
+        await self._con.execute(
+            'UPDATE raid_members SET pending_raids = pending_raids + 1 where uuid = $1', uuid
+        )
+
+    async def get_pending(self) -> dict[str, int]:
+        result = await self._con.query(
+            'SELECT name, pending_raids FROM members m, raid_members r'
+            ' where m.uuid = r.uuid and pending_raids > 0',
+        )
+        return {row[0]: row[1] for row in result}
+
+    async def reset_pending(self, username: str) -> None:
+        await self._con.execute(
+            'UPDATE raid_members SET pending_raids = 0'
+            ' WHERE uuid = (SELECT uuid FROM members WHERE name = $1)',
+            username
+        )
+
     async def remove(self, uuid: UUID) -> None:
         await self._con.execute('DELETE FROM raid_members WHERE uuid = $1', uuid)
 
