@@ -20,8 +20,11 @@ async def guild_awards(bot: Pianobot) -> None:
         results = await bot.database.guild_award_stats.get_for_cycle(get_cycle(dt - timedelta(days=10)))
         prev_results = await bot.database.guild_award_stats.get_for_cycle(get_cycle(dt - timedelta(days=20)))
 
-        prev_raids = {entry.username: entry.raid_count for entry in prev_results}
-        raid_res = [(entry.username, entry.raid_count - prev_raids.get(entry.username, 0)) for entry in results]
+        # prev_raids = {entry.username: entry.raid_count for entry in prev_results}
+        # raid_res = [(entry.username, entry.raid_count - prev_raids.get(entry.username, 0)) for entry in results]
+        prev_dt = dt - timedelta(days=10)
+        start_date = datetime(prev_dt.year, prev_dt.month, 1 if prev_dt.day < 15 else 15, tzinfo=timezone.utc)
+        raid_res = list((await bot.database.raid_log.get_between(start_date)).items())
         raid_res.sort(key=lambda x: x[1], reverse=True)
 
         prev_wars = {entry.username: entry.wars for entry in prev_results}
@@ -86,7 +89,7 @@ async def update_for_cycle(bot: Pianobot, cycle: str, prev_cycle: str | None = N
 
 async def send_results(bot: Pianobot, cycle: str, results: list[list[tuple[str, int]]]) -> None:
     embed = Embed(title=f'Final award results for promotion cycle  `{cycle}`')
-    for title, code, result in zip(['Raids', 'Wars', 'Guild XP'], ['gss', 'js', 'less'], results):
+    for title, code, result in zip(['Guild Raids', 'Wars', 'Guild XP'], ['gss', 'js', 'less'], results):
         code_block = f'```{code}\n'
         for i, data in enumerate(result[:9]):
             code_block += f'{i + 1}. {data[0]} (+{data[1]})\n'
