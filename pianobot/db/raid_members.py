@@ -14,9 +14,9 @@ class RaidMemberTable:
     async def add(self, uuid: UUID, xp: int) -> None:
         await self._con.execute('INSERT INTO raid_members (uuid, xp) VALUES ($1, $2)', uuid, xp)
 
-    async def add_raid(self, uuid: UUID) -> None:
+    async def add_raid(self, name: str) -> None:
         await self._con.execute(
-            'UPDATE raid_members SET pending_raids = pending_raids + 1 where uuid = $1', uuid
+            'UPDATE raid_members SET pending_raids = pending_raids + 1 WHERE uuid = (SELECT uuid FROM members WHERE name = $1)', name
         )
 
     async def get_pending(self) -> dict[str, int]:
