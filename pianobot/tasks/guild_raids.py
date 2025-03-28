@@ -100,6 +100,7 @@ async def process_members(
                         next(m for m in potential_members.keys() if m.username == member).uuid,
                         raid,
                     )
+                    await bot.database.raid_members.add_raid(member)
             else:
                 getLogger('tasks.guild_awards').warning('Raid with <4: %s', results)
 
