@@ -33,26 +33,59 @@ class GuildRaids(Cog):
     )
     async def graids(self, ctx: Context[Bot], *, arg: str = '') -> None:
         args = arg.split() or ['']
-        if args[0].lower() in ('p', 'pending'):
+        if args[0].lower() in ('e', 'emeralds', 'p', 'pending'):
+            if len(args) >= 2 and args[1].lower() in ('s', 'set'):
+                if ctx.author.guild_permissions.administrator:
+                    try:
+                        with open('emeralds.txt', 'w') as f:
+                            f.write(int(args[2]))
+                    except ValueError | IndexError:
+                        await ctx.send('Input a valid number of emerald blocks per raid!')
+                    else:
+                        await ctx.send(f'Each raid will now reward `{int(args[2])}` emerald blocks.')
+                else:
+                    await ctx.send('You do not have the required permissions to set the raid reward amount.')
+            if len(args) >= 2 and args[1].lower() in ('r', 'reset'):
+                if len(args) < 3:
+                    await ctx.send('Please specify a user to reset the raids for.')
+                elif ctx.author.guild_permissions.administrator:
+                    await self.bot.database.raid_members.reset_pending(args[2])
+                    await ctx.send(f'Pending emeralds of {args[2]} have been reset.')
+                else:
+                    await ctx.send('You do not have the required permissions to reset the raids.')
+                return
             raids = await self.bot.database.raid_members.get_pending()
             if raids:
                 data = [
-                    [raid, str(count)]
+                    [raid, str(count // 4096)]
                     for raid, count in sorted(list(raids.items()), key=lambda x: x[1])
                 ]
-                columns = {'Username': 22, 'Amount': 8}
+                columns = {'Username': 22, 'Pending LE': 12}
                 await paginator(ctx, data, columns, page_rows=20, separator_rows=0, enum=False)
             else:
                 await ctx.send('No new raids have been logged.')
-        elif args[0].lower() in ('r', 'reset') and ctx.guild:
-            if len(args) < 2:
-                await ctx.send('Please specify a user to reset the raids for.')
-            elif ctx.author.guild_permissions.administrator:
-                await self.bot.database.raid_members.reset_pending(args[1])
-                await ctx.send(f'Raids of {args[1]} have been reset.')
+        elif args[0].lower() in ('a', 'aspects'):
+            if len(args) >= 2 and args[1].lower() in ('r', 'reset'):
+                if len(args) < 3:
+                    await ctx.send('Please specify a user to reset the raids for.')
+                elif ctx.author.guild_permissions.administrator:
+                    await self.bot.database.raid_members.reset_aspects(args[2])
+                    await ctx.send(f'Pending aspects of {args[2]} have been reset.')
+                else:
+                    await ctx.send('You do not have the required permissions to reset the raids.')
+                return
+            raids = await self.bot.database.raid_members.get_aspects()
+            if raids:
+                data = [
+                    [raid, str(count // 2)]
+                    for raid, count in sorted(list(raids.items()), key=lambda x: x[1])
+                ]
+                columns = {'Username': 22, 'Pending Aspects': 17}
+                await paginator(ctx, data, columns, page_rows=20, separator_rows=0, enum=False)
             else:
-                await ctx.send('You do not have the required permissions to reset the raids.')
-            return
+                await ctx.send('No new raids have been logged.')
+        elif args[1].lower() in ('r', 'reset'):
+            await ctx.send('Reset pending emeralds with `-graids e r <name>` or pending aspects with `-graids a r <name>`.')
         else:
             args = list(map(str.lower, args))
             now = datetime.now(timezone.utc)
