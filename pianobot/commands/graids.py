@@ -52,7 +52,7 @@ class GuildRaids(Cog):
                     await ctx.send('Please specify a user to reset the raids for.')
                 elif ctx.author.guild_permissions.administrator:
                     await self.bot.database.raid_members.reset_pending(args[2])
-                    await ctx.send(f'Pending emeralds of {args[2]} have been reset.')
+                    await ctx.send(f'Pending emeralds of `{args[2]}` have been reset.')
                 else:
                     await ctx.send('You do not have the required permissions to reset the raids.')
                 return
@@ -72,7 +72,7 @@ class GuildRaids(Cog):
                     await ctx.send('Please specify a user to reset the raids for.')
                 elif ctx.author.guild_permissions.administrator:
                     await self.bot.database.raid_members.reset_aspects(args[2])
-                    await ctx.send(f'Pending aspects of {args[2]} have been reset.')
+                    await ctx.send(f'Pending aspects of `{args[2]}` have been reset.')
                 else:
                     await ctx.send('You do not have the required permissions to reset the raids.')
                 return
