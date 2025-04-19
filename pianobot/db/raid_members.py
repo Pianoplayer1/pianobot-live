@@ -47,12 +47,17 @@ class RaidMemberTable:
         )
         return {row[0]: row[1] for row in result}
 
-    async def reset_aspects(self, username: str) -> None:
-        await self._con.execute(
-            'UPDATE raid_members SET pending_aspects = MOD(pending_aspects, 2)'
-            ' WHERE uuid = (SELECT uuid FROM members WHERE name = $1)',
-            username
-        )
+    async def reset_aspects(self, username: str | None) -> None:
+        if username is not None:
+            await self._con.execute(
+                'UPDATE raid_members SET pending_aspects = MOD(pending_aspects, 2)'
+                ' WHERE uuid = (SELECT uuid FROM members WHERE name = $1)',
+                username
+            )
+        else:
+            await self._con.execute(
+                'UPDATE raid_members SET pending_aspects = MOD(pending_aspects, 2)'
+            )
 
     async def remove(self, uuid: UUID) -> None:
         await self._con.execute('DELETE FROM raid_members WHERE uuid = $1', uuid)

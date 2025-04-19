@@ -33,7 +33,7 @@ class GuildRaids(Cog):
     )
     async def graids(self, ctx: Context[Bot], *, arg: str = '') -> None:
         args = arg.split() or ['']
-        if args[0].lower() in ('e', 'emeralds', 'p', 'pending'):
+        if len(args) > 0 and args[0].lower() in ('e', 'emeralds', 'p', 'pending'):
             if len(args) > 2 and args[1].lower() in ('s', 'set'):
                 if ctx.author.guild_permissions.administrator:
                     try:
@@ -66,10 +66,11 @@ class GuildRaids(Cog):
                 await paginator(ctx, data, columns, page_rows=20, separator_rows=0, enum=False)
             else:
                 await ctx.send('No new raids have been logged.')
-        elif args[0].lower() in ('a', 'aspects'):
+        elif len(args) > 0 and args[0].lower() in ('a', 'aspects'):
             if len(args) >= 2 and args[1].lower() in ('r', 'reset'):
-                if len(args) < 3:
-                    await ctx.send('Please specify a user to reset the raids for.')
+                if len(args) < 3 and ctx.author.guild_permissions.administrator:
+                    await self.bot.database.raid_members.reset_aspects()
+                    await ctx.send('All pending aspects have been reset.')
                 elif ctx.author.guild_permissions.administrator:
                     await self.bot.database.raid_members.reset_aspects(args[2])
                     await ctx.send(f'Pending aspects of `{args[2]}` have been reset.')
@@ -86,7 +87,7 @@ class GuildRaids(Cog):
                 await paginator(ctx, data, columns, page_rows=20, separator_rows=0, enum=False)
             else:
                 await ctx.send('No new raids have been logged.')
-        elif args[1].lower() in ('r', 'reset'):
+        elif len(args) > 1 and args[1].lower() in ('r', 'reset'):
             await ctx.send('Reset pending emeralds with `-graids e r <name>` or pending aspects with `-graids a r <name>`.')
         else:
             args = list(map(str.lower, args))
