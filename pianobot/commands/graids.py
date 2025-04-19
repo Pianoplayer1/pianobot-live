@@ -37,12 +37,12 @@ class GuildRaids(Cog):
             if len(args) > 2 and args[1].lower() in ('s', 'set'):
                 if ctx.author.guild_permissions.administrator:
                     try:
+                        amount = int(args[2])
                         with open('emeralds.txt', 'w') as f:
-                            f.write(int(args[2]))
+                            f.write(str(amount))
                     except ValueError:
                         await ctx.send('Input a valid number of emeralds per raid!')
                     else:
-                        amount = int(args[2])
                         await ctx.send(f'Each raid will now reward `{amount}` emeralds (`{round(amount / 4096, 2)}`) LE.')
                 else:
                     await ctx.send('You do not have the required permissions to set the raid reward amount.')
