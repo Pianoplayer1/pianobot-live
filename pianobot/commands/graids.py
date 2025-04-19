@@ -34,15 +34,16 @@ class GuildRaids(Cog):
     async def graids(self, ctx: Context[Bot], *, arg: str = '') -> None:
         args = arg.split() or ['']
         if args[0].lower() in ('e', 'emeralds', 'p', 'pending'):
-            if len(args) >= 2 and args[1].lower() in ('s', 'set'):
+            if len(args) > 2 and args[1].lower() in ('s', 'set'):
                 if ctx.author.guild_permissions.administrator:
                     try:
                         with open('emeralds.txt', 'w') as f:
                             f.write(int(args[2]))
-                    except ValueError | IndexError:
-                        await ctx.send('Input a valid number of emerald blocks per raid!')
+                    except ValueError:
+                        await ctx.send('Input a valid number of emeralds per raid!')
                     else:
-                        await ctx.send(f'Each raid will now reward `{int(args[2])}` emerald blocks.')
+                        amount = int(args[2])
+                        await ctx.send(f'Each raid will now reward `{amount}` emeralds (`{round(amount / 4096, 2)}`) LE.')
                 else:
                     await ctx.send('You do not have the required permissions to set the raid reward amount.')
             if len(args) >= 2 and args[1].lower() in ('r', 'reset'):
