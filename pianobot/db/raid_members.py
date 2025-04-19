@@ -14,16 +14,17 @@ class RaidMemberTable:
     async def add(self, uuid: UUID, xp: int) -> None:
         await self._con.execute('INSERT INTO raid_members (uuid, xp) VALUES ($1, $2)', uuid, xp)
 
-    async def add_raid(self, uuid: UUID) -> None:
+    async def add_raid(self, username: str) -> None:
         with open('emeralds.txt', 'r', encoding='UTF-8') as f:
             emeralds_per_raid = int(f.readline())
         await self._con.execute(
             (
                 'UPDATE raid_members SET pending_raids = pending_raids + $1,'
-                ' pending_aspects = pending_aspects + 1 where uuid = $2'
+                ' pending_aspects = pending_aspects + 1'
+                ' where uuid = (SELECT uuid FROM members WHERE name = $2)'
             ),
             emeralds_per_raid,
-            uuid
+            username
         )
 
     async def get_pending(self) -> dict[str, int]:
