@@ -14,6 +14,8 @@ RAIDS = {
     'The Nameless Anomaly': {'tna'},
 }
 
+ASPECT_ROLES = (682677588933869577, 727551690248683571, 682675116865224773)
+
 
 class GuildRaids(Cog):
     def __init__(self, bot: Pianobot) -> None:
@@ -68,12 +70,13 @@ class GuildRaids(Cog):
                 await ctx.send('No new raids have been logged.')
         elif len(args) > 0 and args[0].lower() in ('a', 'aspects'):
             if len(args) >= 2 and args[1].lower() in ('r', 'reset'):
-                if len(args) < 3 and ctx.author.guild_permissions.administrator:
-                    await self.bot.database.raid_members.reset_aspects()
-                    await ctx.send('All pending aspects have been reset.')
-                elif ctx.author.guild_permissions.administrator:
-                    await self.bot.database.raid_members.reset_aspects(args[2])
-                    await ctx.send(f'Pending aspects of `{args[2]}` have been reset.')
+                if any(r for r in ctx.author.roles if r.id in ASPECT_ROLES):
+                    if len(args) < 3:
+                        await self.bot.database.raid_members.reset_aspects()
+                        await ctx.send('All pending aspects have been reset.')
+                    else:
+                        await self.bot.database.raid_members.reset_aspects(args[2])
+                        await ctx.send(f'Pending aspects of `{args[2]}` have been reset.')
                 else:
                     await ctx.send('You do not have the required permissions to reset the raids.')
                 return
