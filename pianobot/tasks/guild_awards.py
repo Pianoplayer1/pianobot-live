@@ -32,7 +32,15 @@ async def guild_awards(bot: Pianobot) -> None:
         war_res.sort(key=lambda x: x[1], reverse=True)
 
         prev_xp = {entry.username: entry.xp for entry in prev_results}
-        xp_res = [(entry.username, entry.xp - prev_xp.get(entry.username, 0)) for entry in results]
+        xp_res = [
+            (
+                entry.username,
+                entry.xp - prev_xp.get(entry.username, 0)
+                if prev_xp.get(entry.username, 0) <= entry.xp
+                else entry.xp
+            )
+            for entry in results
+        ]
         xp_res.sort(key=lambda x: x[1], reverse=True)
 
         await send_results(bot, get_cycle(dt - timedelta(days=10)), [raid_res, war_res, xp_res])

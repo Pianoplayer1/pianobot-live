@@ -49,13 +49,13 @@ async def guild_raids(bot: Pianobot) -> None:
                 await bot.database.raids.set(member.uuid, raid, count)
         else:
             xp_diff = member.contributed_xp - db_stats[member.uuid]
-            if xp_diff > 0:
+            if xp_diff:
                 await bot.database.raid_members.update_xp(member.uuid, member.contributed_xp)
                 if xp_per_raid <= xp_diff < 3 * xp_per_raid:
                     member_raids = await bot.database.raids.get_for_player(member.uuid)
                     old_raids = await bot.database.raids.prev_for_player(member.uuid)
                     potential_members[member] = (member_raids, old_raids)
-            if xp_diff > 0 or member.is_online:
+            if xp_diff or member.is_online:
                 try:
                     player = await bot.corkus.player.getv3(member.uuid)
                     raids = player.get('globalData', {}).get('raids', {}).get('list', {})

@@ -72,8 +72,10 @@ class GuildRaids(Cog):
             if len(args) >= 2 and args[1].lower() in ('r', 'reset'):
                 if any(r for r in ctx.author.roles if r.id in ASPECT_ROLES):
                     if len(args) < 3:
+                        await ctx.send('Please specify a user (or `all`) to reset the raids for.')
+                    elif args[2] == 'all':
                         await self.bot.database.raid_members.reset_aspects()
-                        await ctx.send('All pending aspects have been reset.')
+                        await ctx.send(f'All pending aspects have been reset.')
                     else:
                         await self.bot.database.raid_members.reset_aspects(args[2])
                         await ctx.send(f'Pending aspects of `{args[2]}` have been reset.')

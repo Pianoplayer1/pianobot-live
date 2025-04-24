@@ -48,7 +48,7 @@ class RaidMemberTable:
         )
         return {row[0]: row[1] for row in result}
 
-    async def reset_aspects(self, username: str | None) -> None:
+    async def reset_aspects(self, username: str | None = None) -> None:
         if username is not None:
             await self._con.execute(
                 'UPDATE raid_members SET pending_aspects = MOD(pending_aspects, 2)'

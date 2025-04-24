@@ -47,7 +47,7 @@ class Awards(Cog):
                 # entry.raid_count - prev_raids.get(entry.username, 0),
                 raid_results.get(entry.username, 0),
                 entry.wars - prev_wars.get(entry.username, 0),
-                entry.xp - prev_xp.get(entry.username, 0),
+                entry.xp - prev_xp.get(entry.username, 0) if prev_xp.get(entry.username, 0) <= entry.xp else entry.xp,
             )
             for entry in results
         ]
