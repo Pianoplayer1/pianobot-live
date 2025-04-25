@@ -21,10 +21,10 @@ class Connection:
         )
         getLogger('database').debug('Connected to database %s', self._database)
 
-    async def execute(self, sql: str, *args: Any) -> None:
+    async def execute(self, sql: str, *args: Any) -> str:
         if self._pool is None:
             raise AttributeError('Connection not initialized!')
-        await self._pool.execute(sql, *args)
+        return await self._pool.execute(sql, *args)
 
     async def query(self, sql: str, *args: Any) -> list[Record]:
         if self._pool is None:
