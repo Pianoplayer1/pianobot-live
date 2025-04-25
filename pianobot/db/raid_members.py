@@ -37,7 +37,7 @@ class RaidMemberTable:
     async def reset_pending(self, username: str) -> bool:
         result = await self._con.execute(
             'UPDATE raid_members SET pending_raids = MOD(pending_raids, 4096)'
-            ' WHERE uuid = (SELECT uuid FROM members WHERE name = $1)',
+            ' WHERE uuid = (SELECT uuid FROM members WHERE name ILIKE $1)',
             username
         )
         return result.endswith('1')
