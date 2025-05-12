@@ -12,8 +12,8 @@ class TerritoryEndpoint(Endpoint):
         :param timeout: Optionally override default timeout.
         """
         response = await self._request.get(
-            version = APIVersion.V1,
-            parameters = "territoryList",
+            version = APIVersion.V3,
+            parameters = "guild/list/territory",
             timeout = timeout
         )
-        return [Territory(self._corkus, t) for t in response.get("territories", {}).values()]
+        return [Territory(self._corkus, t, n) for n, t in response.items()]
