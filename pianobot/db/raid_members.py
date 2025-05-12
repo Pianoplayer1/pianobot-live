@@ -27,8 +27,8 @@ class RaidMemberTable:
             username
         )
 
-    async def set_aspects(self, username: str, amount: int) -> None:
-        await self._con.execute(
+    async def set_aspects(self, username: str, amount: int) -> bool:
+        result = await self._con.execute(
             'UPDATE raid_members SET pending_aspects = $1'
             ' where uuid = (SELECT uuid FROM members WHERE name = $2)',
             amount,
