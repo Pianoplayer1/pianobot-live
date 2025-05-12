@@ -20,6 +20,7 @@ class Pianobot(Bot):
     session: ClientSession
     member_update_channel: str | None
     xp_tracking_channel: str | None
+    has_started: bool = False
 
     def __init__(self) -> None:
         intents = Intents.default()
@@ -38,7 +39,7 @@ class Pianobot(Bot):
         )
 
         self.logger = getLogger('bot')
-        self.enable_tracking = False
+        self.enable_tracking = True
         self.database = DBManager()
 
         with open('tracked_guilds.txt', 'r', encoding='UTF-8') as file:
@@ -61,8 +62,13 @@ class Pianobot(Bot):
                     await self.load_extension(f'pianobot.{folder}.{extension}')
                 except ExtensionFailed as exc:
                     self.logger.warning('Skipped %s.%s: %s', folder, extension, exc.__cause__)
+        await self.tree.sync()
 
     async def on_ready(self) -> None:
+        if self.has_started:
+            return
+        self.has_started = True
+
         self.member_update_channel = getenv('MEMBER_CHANNEL', '')
         # member_update_channel = self.get_channel(int(getenv('MEMBER_CHANNEL', 0)))
         # if isinstance(member_update_channel, TextChannel):
