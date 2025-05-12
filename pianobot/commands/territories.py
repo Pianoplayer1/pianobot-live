@@ -13,7 +13,7 @@ class Territories(app_commands.Group):
     async def list(self, interaction: Interaction) -> None:
         db_terrs = await self.bot.database.territories.get_all()
         await paginator(
-            interaction,
+            FakeCtx(interaction),
             sorted([[terr.name, terr.guild] for terr in db_terrs], key=lambda i: i[0]),
             {
                 'Territory': len(max([terr.name for terr in db_terrs], key=len)) + 8,
@@ -103,3 +103,8 @@ class Territories(app_commands.Group):
 async def setup(bot: Pianobot) -> None:
     if bot.enable_tracking:
         bot.tree.add_command(Territories(bot))
+
+
+class FakeCtx:
+    def __init__(self, interaction: Interaction) -> None:
+        self.send = interaction.response.send_message

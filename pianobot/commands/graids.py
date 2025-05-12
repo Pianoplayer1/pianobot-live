@@ -98,13 +98,13 @@ class GuildRaids(Cog):
                 else:
                     await ctx.send('You do not have the required permissions to manage aspects.')
                 return
-            if len(args) >= 2 and args[1].lower() in ('a', 'allow'):
+            if len(args) >= 2 and args[1].lower() in ('b', 'block'):
                 if any(r for r in ctx.author.roles if r.id in ASPECT_ROLES):
                     if len(args) < 3:
                         await ctx.send('Please specify a user (or `all`) to block aspects for.')
                     else:
                         if await self.bot.database.raid_members.set_aspects(args[2], -1):
-                            await ctx.send(f'`{args[2]}` is no longer receiving aspects.')
+                            await ctx.send(f'`{args[2]}` is now no longer receiving aspects.')
                         else:
                             await ctx.send(f'Username `{args[2]}` not found.')
                 else:
