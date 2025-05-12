@@ -20,12 +20,21 @@ class RaidMemberTable:
         await self._con.execute(
             (
                 'UPDATE raid_members SET pending_raids = pending_raids + $1,'
-                ' pending_aspects = pending_aspects + 1'
+                ' pending_aspects = IF (pending_aspects < 0, -1, pending_aspects + 1)'
                 ' where uuid = (SELECT uuid FROM members WHERE name = $2)'
             ),
             emeralds_per_raid,
             username
         )
+
+    async def set_aspects(self, username: str, amount: int) -> None:
+        await self._con.execute(
+            'UPDATE raid_members SET pending_aspects = $1'
+            ' where uuid = (SELECT uuid FROM members WHERE name = $2)',
+            amount,
+            username
+        )
+        return result.endswith('1')
 
     async def get_pending(self) -> dict[str, int]:
         result = await self._con.query(

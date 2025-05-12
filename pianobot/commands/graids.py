@@ -86,6 +86,30 @@ class GuildRaids(Cog):
                 else:
                     await ctx.send('You do not have the required permissions to reset the raids.')
                 return
+            if len(args) >= 2 and args[1].lower() in ('a', 'allow'):
+                if any(r for r in ctx.author.roles if r.id in ASPECT_ROLES):
+                    if len(args) < 3:
+                        await ctx.send('Please specify a user (or `all`) to allow aspects for.')
+                    else:
+                        if await self.bot.database.raid_members.reset_aspects(args[2], 0):
+                            await ctx.send(f'`{args[2]}` is now receiving aspects again.')
+                        else:
+                            await ctx.send(f'Username `{args[2]}` not found.')
+                else:
+                    await ctx.send('You do not have the required permissions to manage aspects.')
+                return
+            if len(args) >= 2 and args[1].lower() in ('a', 'allow'):
+                if any(r for r in ctx.author.roles if r.id in ASPECT_ROLES):
+                    if len(args) < 3:
+                        await ctx.send('Please specify a user (or `all`) to block aspects for.')
+                    else:
+                        if await self.bot.database.raid_members.set_aspects(args[2], -1):
+                            await ctx.send(f'`{args[2]}` is no longer receiving aspects.')
+                        else:
+                            await ctx.send(f'Username `{args[2]}` not found.')
+                else:
+                    await ctx.send('You do not have the required permissions to manage aspects.')
+                return
             raids = await self.bot.database.raid_members.get_aspects()
             if raids:
                 data = [
