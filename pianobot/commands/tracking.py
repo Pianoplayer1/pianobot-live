@@ -30,11 +30,11 @@ class Tracking(app_commands.Group):
             if current_server.ping_role is not None
             else None
         )
-        role_msg = 'does not ping' if role is None else f'pings {role.mention}'
+        role_msg = 'does not ping a role' if role is None else f'pings {role.mention}'
 
         embed = Embed(
             description=(
-                f'Not active at the moment. Use `{current_server.prefix}tracking channel`'
+                f'Not active at the moment. Use `/tracking channel`'
                 ' to start territory tracking!'
             )
             if channel is None
@@ -57,7 +57,7 @@ class Tracking(app_commands.Group):
                 if current_server.ping_interval is None
                 else f'Ping cooldown: {current_server.ping_interval} minutes'
             ),
-            value=f'*Configure with* `{current_server.prefix}tracking ping <minutes>`*.*',
+            value=f'*Configure with* `/tracking ping <minutes>`*.*',
         )
         embed.add_field(
             inline=False,
@@ -67,11 +67,10 @@ class Tracking(app_commands.Group):
                 else f'Pings unless a {RANKS[current_server.ping_rank]} is online'
             ),
             value=(
-                f'*Configure with* `{current_server.prefix}tracking rank <stars>`*, '
+                f'*Configure with* `/tracking rank <stars>`*, '
                 'use -1 as value to ping regardless of online members.*'
             ),
         )
-        embed.set_footer(text=f'For more information, run `{current_server.prefix}help tracking`.')
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command(

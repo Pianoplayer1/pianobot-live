@@ -49,7 +49,7 @@ async def territories(bot: Pianobot) -> None:
         terrs_msg += f'\n- ... ({len(missing) - 10} more)'
     msg = (
         f'{notify.guild.name if notify.guild is not None else None} has taken control of'
-        f' {notify.name}!```All missing territories ({len(missing)}):\n\n{terrs_msg}```'
+        f' {notify.name}!```' # All missing territories ({len(missing)}):\n\n{terrs_msg}```'
     )
 
     try:
