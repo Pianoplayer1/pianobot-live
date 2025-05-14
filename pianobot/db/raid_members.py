@@ -20,7 +20,7 @@ class RaidMemberTable:
         await self._con.execute(
             (
                 'UPDATE raid_members SET pending_raids = pending_raids + $1,'
-                ' pending_aspects = CASE pending_aspects < 0 THEN -1 ELSE pending_aspects + 1 END'
+                ' pending_aspects = CASE WHEN pending_aspects < 0 THEN -1 ELSE pending_aspects + 1 END'
                 ' where uuid = (SELECT uuid FROM members WHERE name = $2)'
             ),
             emeralds_per_raid,
