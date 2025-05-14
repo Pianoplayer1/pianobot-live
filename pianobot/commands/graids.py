@@ -91,7 +91,7 @@ class GuildRaids(Cog):
                     if len(args) < 3:
                         await ctx.send('Please specify a user (or `all`) to allow aspects for.')
                     else:
-                        if await self.bot.database.raid_members.reset_aspects(args[2], 0):
+                        if await self.bot.database.raid_members.reset_aspects(args[2]):
                             await ctx.send(f'`{args[2]}` is now receiving aspects again.')
                         else:
                             await ctx.send(f'Username `{args[2]}` not found.')
