@@ -30,11 +30,18 @@ class RaidMemberTable:
     async def set_aspects(self, username: str, amount: int) -> bool:
         result = await self._con.execute(
             'UPDATE raid_members SET pending_aspects = $1'
-            ' where uuid = (SELECT uuid FROM members WHERE name = $2)',
+            ' where uuid = (SELECT uuid FROM members WHERE name ILIKE $2)',
             amount,
             username
         )
         return result.endswith('1')
+
+    async def get_blocked_aspects(self) -> list[str]:
+        result = await self._con.query(
+            'SELECT name FROM members m, raid_members r'
+            ' where m.uuid = r.uuid and pending_aspects < 0',
+        )
+        return [row[0] for row in result]
 
     async def get_pending(self) -> dict[str, int]:
         result = await self._con.query(

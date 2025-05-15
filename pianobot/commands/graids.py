@@ -89,9 +89,9 @@ class GuildRaids(Cog):
             if len(args) >= 2 and args[1].lower() in ('a', 'allow'):
                 if any(r for r in ctx.author.roles if r.id in ASPECT_ROLES):
                     if len(args) < 3:
-                        await ctx.send('Please specify a user (or `all`) to allow aspects for.')
+                        await ctx.send('Please specify a user to allow aspects for.')
                     else:
-                        if await self.bot.database.raid_members.reset_aspects(args[2]):
+                        if await self.bot.database.raid_members.set_aspects(args[2], 0):
                             await ctx.send(f'`{args[2]}` is now receiving aspects again.')
                         else:
                             await ctx.send(f'Username `{args[2]}` not found.')
@@ -101,7 +101,11 @@ class GuildRaids(Cog):
             if len(args) >= 2 and args[1].lower() in ('b', 'block'):
                 if any(r for r in ctx.author.roles if r.id in ASPECT_ROLES):
                     if len(args) < 3:
-                        await ctx.send('Please specify a user (or `all`) to block aspects for.')
+                        blocked_members = await self.bot.database.raid_members.get_blocked_aspects()
+                        if blocked_members:
+                            await ctx.send('Blocked members:\n' + '\n'.join(sorted(blocked_members)))
+                        else:
+                            await ctx.send('No members are currently blocked from receiving aspects.')
                     else:
                         if await self.bot.database.raid_members.set_aspects(args[2], -1):
                             await ctx.send(f'`{args[2]}` is now no longer receiving aspects.')
