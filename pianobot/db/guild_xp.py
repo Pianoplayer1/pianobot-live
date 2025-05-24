@@ -60,7 +60,7 @@ class GuildXPTable:
         return {
             member: (end_data[i + 1] or 0) - (start_data[i + 1] or 0)
             for i, member in enumerate(members)
-            if (end_data[i + 1] or 0) - (start_data[i + 1] > 0 or 0)
+            if (end_data[i + 1] or 0) - (start_data[i + 1] or 0) > 0
         }
 
     async def _bind(self, result: list[Record]) -> GuildXP | None:
