@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from math import floor, log10
 
 from discord.ext.commands import Bot, Cog, Context, command
 from discord.utils import format_dt
@@ -94,7 +95,7 @@ def display(num: int | float) -> str:
     names = ['', ' Thousand', ' Million', ' Billion', ' Trillion']
     pos = max(
         0,
-        min(len(names) - 1, int(math.floor(0 if num == 0 else math.log10(abs(num)) / 3))),
+        min(len(names) - 1, int(floor(0 if num == 0 else log10(abs(num)) / 3))),
     )
     return f'{num / 10 ** (3 * pos):.2f}{names[pos]}'
 
