@@ -35,9 +35,9 @@ class GuildXP(Cog):
                         with open('xp_emeralds.txt', 'w') as f:
                             f.write(str(amount))
                     except ValueError:
-                        await ctx.send('Input a valid number of emeralds per 1B xp!')
+                        await ctx.send('Input a valid number of emeralds per 1 billion xp!')
                     else:
-                        await ctx.send(f'Every step of 1B xp will now reward `{amount}` emeralds (`{round(amount / 4096, 2)}` LE).')
+                        await ctx.send(f'Every step of 1 billion xp will now reward `{amount}` emeralds (`{round(amount / 4096, 2)}` LE).')
                 else:
                     await ctx.send('You do not have the required permissions to set the xp reward amount.')
                 return
@@ -58,7 +58,7 @@ class GuildXP(Cog):
                     [name, display(amount), str(le // 4096)]
                     for name, amount, le in sorted(list(results.items()), key=lambda x: (x[2], x[1]))
                 ]
-                columns = {'Username': 19, 'Amount': 15, 'Pending LE': 12}
+                columns = {'Username': 18, 'Amount': 18, 'Pending LE': 12}
                 await paginator(ctx, data, columns, page_rows=20, separator_rows=0, enum=False)
             else:
                 await ctx.send('There are no pending xp rewards.')
@@ -79,7 +79,7 @@ class GuildXP(Cog):
                     [name, display(count)]
                     for name, count in sorted(list(results.items()), key=lambda x: x[1])
                 ]
-                columns = {'Username': 19, 'Amount': 15}
+                columns = {'Username': 18, 'Amount': 18}
                 message = f'Guild xp contributions'
                 if start and not end:
                     message += f' since {format_dt(start, style="D")}'
