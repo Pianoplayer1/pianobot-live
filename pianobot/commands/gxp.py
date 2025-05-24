@@ -13,7 +13,7 @@ class GuildXP(Cog):
         self.bot = bot
 
     @command(
-        aliases='guildXp, xp',
+        aliases=('guildXp', 'xp'),
         brief='Returns the guild xp contributed by Eden members.',
         help=(
             'This command gives a list of contributed guild xp per member.'

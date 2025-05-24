@@ -28,10 +28,10 @@ class RaidMemberTable:
         )
 
     async def add_xp(self, uuid: UUID, amount: int) -> None:
-        old_amount = await self._con.query(
+        old_amount = (await self._con.query(
             'SELECT pending_xp FROM raid_members WHERE uuid = $1',
             uuid,
-        )[0][0]
+        ))[0][0]
         rewards = (old_amount + amount) // 1000000000 > old_amount // 1000000000
         if rewards:
             with open('xp_emeralds.txt', 'r', encoding='UTF-8') as f:
