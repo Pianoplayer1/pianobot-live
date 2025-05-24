@@ -10,4 +10,5 @@ from .raid_members import RaidMemberTable
 from .raids import RaidTable
 from .servers import ServerTable
 from .territories import TerritoryTable
+from .war_log import WarLogTable
 from .worlds import WorldTable

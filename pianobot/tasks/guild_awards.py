@@ -86,12 +86,16 @@ async def update_for_cycle(bot: Pianobot, cycle: str, prev_cycle: str | None = N
                         await bot.database.guild_award_stats.update_raids(member.username, cycle, raids.get('list', {}))
                     wars = player.get('globalData', {}).get('wars', None)
                     if wars is not None and wars != db_stat.wars:
+                        for _ in range(max(0, wars - db_stat.wars)):
+                            await bot.database.war_log.add(member.uuid)
                         await bot.database.guild_award_stats.update_wars(member.username, cycle, wars)
                 except CorkusException as e:
                     getLogger('tasks.guild_awards').warning(
                         'Error when fetching player data of `%s`: %s', member.username, e
                     )
                 if member.contributed_xp != db_stat.xp:
+                    if member.contributed_xp > db_stat.xp:
+                        await bot.database.raid_members.add(member.uuid, member.contributed_xp - db_stat.xp)
                     await bot.database.guild_award_stats.update_xp(member.username, cycle, member.contributed_xp)
 
 

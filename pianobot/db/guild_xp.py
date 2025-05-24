@@ -43,6 +43,26 @@ class GuildXPTable:
             )
         )
 
+    async def get_between(self, start: datetime | None = None, end: datetime | None = None) -> dict[str, int]:
+        members = await self.get_members()
+        result_start = await self._con.query(
+            'SELECT * FROM guild_xp WHERE time >= $1 ORDER BY time LIMIT 1',
+            start or datetime.min,
+        )
+        result_end = await self._con.query(
+            'SELECT * FROM guild_xp WHERE time <= $1 ORDER BY time DESC LIMIT 1',
+            end or datetime.max,
+        )
+        if len(result_end) + len(result_start) == 0:
+            return {}
+        start_data = result_start[0]
+        end_data = result_end[0]
+        return {
+            member: end_data[i + 1] - start_data[i + 1]
+            for i, member in enumerate(members)
+            if end_data[i + 1] - start_data[i + 1] > 0
+        }
+
     async def _bind(self, result: list[Record]) -> GuildXP | None:
         members = await self.get_members()
         if result:

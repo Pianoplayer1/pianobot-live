@@ -13,7 +13,7 @@ from pianobot.db import (
     RaidMemberTable,
     ServerTable,
     TerritoryTable,
-    WorldTable,
+    WorldTable, WarLogTable,
 )
 
 
@@ -36,6 +36,7 @@ class DBManager:
         self.raids = RaidTable(self._con)
         self.servers = ServerTable(self._con)
         self.territories = TerritoryTable(self._con)
+        self.war_log = WarLogTable(self._con)
         self.worlds = WorldTable(self._con)
 
     async def connect(self) -> None:

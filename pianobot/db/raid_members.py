@@ -27,6 +27,36 @@ class RaidMemberTable:
             username
         )
 
+    async def add_xp(self, amount: int, uuid: UUID) -> None:
+        old_amount = await self._con.query(
+            'SELECT pending_xp FROM raid_members WHERE uuid = $1',
+            uuid,
+        )[0][0]
+        rewards = (old_amount + amount) // 1000000000 > old_amount // 1000000000
+        if rewards:
+            with open('xp_emeralds.txt', 'r', encoding='UTF-8') as f:
+                rewards *= int(f.readline())
+        await self._con.execute(
+            'UPDATE raid_members SET pending_xp = pending_xp + $1, xp_ems where uuid = $2',
+            amount,
+            uuid
+        )
+
+    async def get_xp(self) -> dict[str, (int, int)]:
+        result = await self._con.query(
+            'SELECT name, pending_xp, xp_ems FROM members m, raid_members r'
+            ' where m.uuid = r.uuid and xp_ems > 0',
+        )
+        return {row[0]: (row[1], row[2]) for row in result}
+
+    async def reset_xp(self, username: str) -> bool:
+        result = await self._con.execute(
+            'UPDATE raid_members SET pending_xp = MOD(pending_xp, 1000000000), xp_ems = MOD(xp_ems, 4096)'
+            ' WHERE uuid = (SELECT uuid FROM members WHERE name ILIKE $1)',
+            username
+        )
+        return result.endswith('1')
+
     async def set_aspects(self, username: str, amount: int) -> bool:
         result = await self._con.execute(
             'UPDATE raid_members SET pending_aspects = $1'
