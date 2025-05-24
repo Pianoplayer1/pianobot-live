@@ -37,9 +37,10 @@ class RaidMemberTable:
             with open('xp_emeralds.txt', 'r', encoding='UTF-8') as f:
                 rewards *= int(f.readline())
         await self._con.execute(
-            'UPDATE raid_members SET pending_xp = pending_xp + $1, xp_ems where uuid = $2',
+            'UPDATE raid_members SET pending_xp = pending_xp + $1, xp_ems = xp_ems + $2 where uuid = $3',
             amount,
-            uuid
+            rewards,
+            uuid,
         )
 
     async def get_xp(self) -> dict[str, (int, int)]:
