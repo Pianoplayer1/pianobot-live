@@ -95,7 +95,7 @@ async def update_for_cycle(bot: Pianobot, cycle: str, prev_cycle: str | None = N
                     )
                 if member.contributed_xp != db_stat.xp:
                     if member.contributed_xp > db_stat.xp:
-                        await bot.database.raid_members.add(member.uuid, member.contributed_xp - db_stat.xp)
+                        await bot.database.raid_members.add_xp(member.uuid, member.contributed_xp - db_stat.xp)
                     await bot.database.guild_award_stats.update_xp(member.username, cycle, member.contributed_xp)
 
 

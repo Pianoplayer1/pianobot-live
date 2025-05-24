@@ -27,7 +27,7 @@ class RaidMemberTable:
             username
         )
 
-    async def add_xp(self, amount: int, uuid: UUID) -> None:
+    async def add_xp(self, uuid: UUID, amount: int) -> None:
         old_amount = await self._con.query(
             'SELECT pending_xp FROM raid_members WHERE uuid = $1',
             uuid,
