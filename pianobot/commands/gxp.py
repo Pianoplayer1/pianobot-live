@@ -56,7 +56,7 @@ class GuildXP(Cog):
             if results:
                 data = [
                     [name, display(amount), str(le // 4096)]
-                    for name, amount, le in sorted(list(results.items()), key=lambda x: (x[2], x[1]))
+                    for name, (amount, le) in sorted(list(results.items()), key=lambda x: (x[1][1], x[1][0]))
                 ]
                 columns = {'Username': 18, 'Amount': 18, 'Pending LE': 12}
                 await paginator(ctx, data, columns, page_rows=20, separator_rows=0, enum=False)
