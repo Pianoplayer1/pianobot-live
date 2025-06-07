@@ -36,6 +36,18 @@ class GuildRaids(Cog):
     async def graids(self, ctx: Context[Bot], *, arg: str = '') -> None:
         args = arg.split() or ['']
         if len(args) > 0 and args[0].lower() in ('e', 'emeralds', 'p', 'pending'):
+            if len(args) >= 2 and args[1].lower() in ('l', 'left'):
+                raids = await self.bot.database.raid_members.get_pending_left()
+                if raids:
+                    data = [
+                        [raid, str(count // 4096)]
+                        for raid, count in sorted(list(raids.items()), key=lambda x: x[1])
+                    ]
+                    columns = {'UUID': 36, 'Pending LE': 12}
+                    await paginator(ctx, data, columns, page_rows=20, separator_rows=0, enum=False)
+                else:
+                    await ctx.send('No pending emeralds of former guild members.')
+                return
             if len(args) > 2 and args[1].lower() in ('s', 'set'):
                 if ctx.author.guild_permissions.administrator:
                     try:
@@ -71,6 +83,18 @@ class GuildRaids(Cog):
             else:
                 await ctx.send('No new raids have been logged.')
         elif len(args) > 0 and args[0].lower() in ('a', 'aspects'):
+            if len(args) >= 2 and args[1].lower() in ('l', 'left'):
+                raids = await self.bot.database.raid_members.get_aspects_left()
+                if raids:
+                    data = [
+                        [raid, str(count // 2)]
+                        for raid, count in sorted(list(raids.items()), key=lambda x: x[1])
+                    ]
+                    columns = {'UUID': 36, 'Pending Aspects': 17}
+                    await paginator(ctx, data, columns, page_rows=20, separator_rows=0, enum=False)
+                else:
+                    await ctx.send('No pending aspects of former guild members.')
+                return
             if len(args) >= 2 and args[1].lower() in ('r', 'reset'):
                 if any(r for r in ctx.author.roles if r.id in ASPECT_ROLES):
                     if len(args) < 3:

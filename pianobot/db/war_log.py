@@ -14,12 +14,11 @@ class WarLogTable:
     async def add(self, uuid: UUID) -> None:
         try:
             await self._con.execute(
-                'INSERT INTO war_log (uuid)'
-                ' VALUES ($1)',
+                'INSERT INTO war_log (uuid) VALUES ($1)',
                 uuid,
             )
         except NotNullViolationError:
-            getLogger('db.war_log').warning('Failed to add log entry for (%s, %s)', uuid, name)
+            getLogger('db.war_log').warning('Failed to add log entry for (%s)', uuid)
 
     async def get_between(self, start: datetime | None = None, end: datetime | None = None) -> dict[str, int]:
         result = await self._con.query(
