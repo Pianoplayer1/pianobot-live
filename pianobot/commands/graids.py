@@ -43,7 +43,7 @@ class GuildRaids(Cog):
                         [raid, str(count // 4096)]
                         for raid, count in sorted(list(raids.items()), key=lambda x: x[1])
                     ]
-                    columns = {'UUID': 36, 'Pending LE': 12}
+                    columns = {'UUID': 40, 'Pending LE': 12}
                     await paginator(ctx, data, columns, page_rows=20, separator_rows=0, enum=False)
                 else:
                     await ctx.send('No pending emeralds of former guild members.')
@@ -90,7 +90,7 @@ class GuildRaids(Cog):
                         [raid, str(count // 2)]
                         for raid, count in sorted(list(raids.items()), key=lambda x: x[1])
                     ]
-                    columns = {'UUID': 36, 'Pending Aspects': 17}
+                    columns = {'UUID': 40, 'Pending Aspects': 17}
                     await paginator(ctx, data, columns, page_rows=20, separator_rows=0, enum=False)
                 else:
                     await ctx.send('No pending aspects of former guild members.')

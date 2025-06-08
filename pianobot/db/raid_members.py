@@ -83,14 +83,15 @@ class RaidMemberTable:
 
     async def get_pending_left(self) -> dict[UUID, int]:
         result = await self._con.query(
-            'SELECT uuid, pending_raids FROM raid_members where pending_raids > 0',
+            'SELECT uuid, pending_raids FROM raid_members'
+            ' where pending_raids > 0 AND uuid NOT IN (SELECT uuid FROM members)',
         )
         return {row[0]: row[1] for row in result}
 
     async def reset_pending(self, username: str) -> bool:
         result = await self._con.execute(
             'UPDATE raid_members SET pending_raids = MOD(pending_raids, 4096)'
-            ' WHERE uuid = (SELECT uuid FROM members WHERE name ILIKE $1) OR uuid = $1',
+            ' WHERE uuid = (SELECT uuid FROM members WHERE name ILIKE $1) OR uuid::TEXT = $1',
             username
         )
         return result.endswith('1')
@@ -104,7 +105,8 @@ class RaidMemberTable:
 
     async def get_aspects_left(self) -> dict[UUID, int]:
         result = await self._con.query(
-            'SELECT uuid, pending_aspects FROM raid_members where pending_aspects > 0',
+            'SELECT uuid, pending_aspects FROM raid_members'
+            ' where pending_aspects > 0 AND uuid NOT IN (SELECT uuid FROM members)',
         )
         return {row[0]: row[1] for row in result}
 
@@ -112,7 +114,7 @@ class RaidMemberTable:
         if username is not None:
             result = await self._con.execute(
                 'UPDATE raid_members SET pending_aspects = MOD(pending_aspects, 2)'
-                ' WHERE uuid = (SELECT uuid FROM members WHERE name ILIKE $1) OR uuid = $1',
+                ' WHERE uuid = (SELECT uuid FROM members WHERE name ILIKE $1) OR uuid::TEXT = $1',
                 username
             )
             return result.endswith('1')
