@@ -16,12 +16,12 @@ class PlayerActivity(Cog):
         brief='Outputs the activity of a given player in a given interval.',
         help=(
             'This command returns a bar graph with the number of minutes a given player has been'
-            ' online in the last days.'
+            ' online in the last days (up to two weeks).'
         ),
         name='playerActivity',
         usage='<player> [days]',
     )
-    async def pact(self, ctx: Context[Bot], player: str, interval: str = '14') -> None:
+    async def pact(self, ctx: Context[Bot], player: str, interval: str = '13') -> None:
         if interval.startswith('-'):
             interval = interval[1:]
         try:
@@ -43,7 +43,7 @@ class PlayerActivity(Cog):
         )
         embed.set_image(
             url=(
-                'https://wynnstats.dieterblancke.xyz/api/charts'
+                'https://wynnstats.endoy.dev/api/charts'
                 f'/onlinetime/{wynn_player.username}/{int_interval}?caching={uuid4()}'
             )
         )
