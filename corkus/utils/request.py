@@ -39,7 +39,7 @@ class CorkusRequest:
             "Content-Type": "application/json"
         }
         if api_key is not None:
-            headers["apikey"] = api_key
+            headers["Authorization"] = f"Bearer {api_key}"
         self._session = ClientSession(headers = headers)
 
 
