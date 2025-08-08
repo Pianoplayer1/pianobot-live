@@ -30,7 +30,7 @@ class RateLimiter:
             return self._reset - int(time.time())
 
     async def limit(self) -> None:
-        if self.remaining <= 1:
+        if self.remaining < -1:
             logger.info(f"You are being ratelimited, waiting for {self.reset}s")
             await asyncio.sleep(self.reset)
 
