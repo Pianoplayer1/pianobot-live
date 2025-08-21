@@ -10,7 +10,7 @@ ForsakenLaws:FKL
 Paladins United:PUN
 The Simple Ones:ILQ
 Lux Nova:LXA
-Guardian of Wynn:GsW
+Guardians of Wynn:GsW
 Idiot Co:ICo
 Kingdom Foxes:Fox
 The Aquarium:TAq
