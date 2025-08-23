@@ -89,12 +89,12 @@ async def process_members(
     for raid, members in sorted(raid_completions.items(), key=lambda x: len(x[1])):
         for i in range(ceil(len(members) / 4)):
             current_members = members[i * 4: (i + 1) * 4]
-            if len(current_members) == 1:
+            if len(current_members) == 1 and len(raid_completions) > 1:
                 unknown.append(current_members[0])
                 getLogger('tasks.guild_awards').warning('Appended to unknown: %s', results)
                 continue
             while add_unknown and len(current_members) < 4:
-                getLogger('tasks.guild_awards').warning('Unknown added: %s', results)
+                # getLogger('tasks.guild_awards').warning('Unknown added: %s', results)
                 current_members.append(unknown.pop())
             if len(current_members) == 4:
                 await send_embed(bot, raid, current_members, level)
