@@ -2,6 +2,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Union
 
+from iso8601 import iso8601
+
 from .base import CorkusBase
 from .partial_guild import PartialGuild
 from .territory_location import TerritoryLocation
@@ -30,7 +32,7 @@ class Territory(CorkusBase):
     @property
     def acquired(self) -> datetime:
         """Datetime when the territory was acquired."""
-        return datetime.strptime(self._attributes.get("acquired", "1970-01-01 00:00:00"), "%Y-%m-%d %H:%M:%S")
+        return iso8601.parse_date(self._attributes.get("acquired", "1970"))
 
     @property
     def location(self) -> TerritoryLocation:
