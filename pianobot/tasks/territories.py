@@ -84,7 +84,7 @@ async def territories(bot: Pianobot) -> None:
     for territory in wynn_territories:
         guild_name = None if territory.guild is None else territory.guild.name
         if territory.name not in db_terrs.keys():
-            await bot.database.territories.add(territory, guild_name, territory.acquired)
+            await bot.database.territories.add(territory.name, guild_name, territory.acquired)
             continue
         if db_terrs[territory.name].guild != guild_name:
             await bot.database.territories.update(territory.name, guild_name, territory.acquired)
