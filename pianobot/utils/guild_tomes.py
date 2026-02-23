@@ -1,21 +1,24 @@
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, timezone
 
 import discord
 from discord.abc import Messageable
 
-from pianobot import Pianobot
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pianobot import Pianobot
 from pianobot.utils.pages import paginator
 from pianobot.utils.time import format_time_since
 
 
 class GuildTomeView(discord.ui.View):
-    def __init__(self, bot: Pianobot) -> None:
+    def __init__(self, bot: "Pianobot") -> None:
         super().__init__()
         self.add_item(GuildTomeButton(bot))
 
 
 class GuildTomeButton(discord.ui.Button[GuildTomeView]):
-    def __init__(self, bot: Pianobot) -> None:
+    def __init__(self, bot: "Pianobot") -> None:
         super().__init__(
             style=discord.ButtonStyle.green,
             label="Join queue",
@@ -33,7 +36,7 @@ class GuildTomeButton(discord.ui.Button[GuildTomeView]):
             )
             return
         last_request = await self.bot.database.guild_tomes.last_requested_for(discord_id)
-        if last_request and last_request.strftime() + timedelta(days=7) > datetime.now(UTC):
+        if last_request and last_request.strftime() + timedelta(days=7) > datetime.now(timezone.utc):
             await interaction.response.send_message(
                 "You have last requested a tome less than a week ago!",
                 ephemeral=True,
@@ -50,7 +53,7 @@ class GuildTomeButton(discord.ui.Button[GuildTomeView]):
             await send_formatted_list(self.bot, self.bot.tome_log_channel, start_text)
 
 
-async def send_formatted_list(bot: Pianobot, ctx: Messageable, start_text: str) -> None:
+async def send_formatted_list(bot: "Pianobot", ctx: Messageable, start_text: str) -> None:
     columns = {"Discord Name": 48, "Amount": 8, "Requested At": 20}
     await paginator(
         ctx,
@@ -61,7 +64,7 @@ async def send_formatted_list(bot: Pianobot, ctx: Messageable, start_text: str) 
     )
 
 
-async def format_pending_list(bot: Pianobot) -> list[list[str]]:
+async def format_pending_list(bot: "Pianobot") -> list[list[str]]:
     pending_tomes = await bot.database.guild_tomes.get_pending()
     return [
         [
