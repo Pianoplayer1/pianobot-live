@@ -55,22 +55,16 @@ class GuildTomeButton(discord.ui.Button[GuildTomeView]):
 
 async def send_formatted_list(bot: "Pianobot", ctx: Messageable, start_text: str) -> None:
     columns = {"Discord Name": 35, "Amount": 8, "Requested At": 20}
-    await paginator(
-        ctx,
-        await format_pending_list(bot),
-        columns,
-        separator_rows=0,
-        start_text=start_text,
-    )
+    if not (pending_tomes := await bot.database.guild_tomes.get_pending()):
+        await ctx.send("None!")
 
-
-async def format_pending_list(bot: "Pianobot") -> list[list[str]]:
-    pending_tomes = await bot.database.guild_tomes.get_pending()
-    return [
+    data = [
         [
-            bot.get_guild(713710628258185258).get_member(discord_id).display_name[:30],
+            bot.get_guild(682671629213368351).get_member(discord_id).display_name[:30],
             str(count),
             format_time_since(first_request)[1] + " ago"
         ]
         for discord_id, (count, first_request) in pending_tomes.items()
     ]
+
+    await paginator(ctx, data, columns, separator_rows=0, start_text=start_text)

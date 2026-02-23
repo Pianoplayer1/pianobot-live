@@ -68,7 +68,7 @@ class Pianobot(Bot):
                 except ExtensionFailed as exc:
                     self.logger.warning('Skipped %s.%s: %s', folder, extension, exc.__cause__)
         await self.tree.sync()
-        await self.tree.sync(guild=Object(713710628258185258))
+        await self.tree.sync(guild=Object(682671629213368351))
 
     async def on_ready(self) -> None:
         if self.has_started:
