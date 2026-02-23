@@ -49,12 +49,12 @@ class GuildTomeButton(discord.ui.Button[GuildTomeView]):
             ephemeral=True,
         )
         if self.bot.tome_log_channel:
-            start_text = f"{interaction.user.display_name} queued up for a guild tome.\nCurrently pending tomes:\n\n"
+            start_text = f"{interaction.user.display_name} queued up for a guild tome.\nCurrently pending tomes:\n"
             await send_formatted_list(self.bot, self.bot.tome_log_channel, start_text)
 
 
 async def send_formatted_list(bot: "Pianobot", ctx: Messageable, start_text: str) -> None:
-    columns = {"Discord Name": 48, "Amount": 8, "Requested At": 20}
+    columns = {"Discord Name": 35, "Amount": 8, "Requested At": 20}
     await paginator(
         ctx,
         await format_pending_list(bot),
@@ -68,7 +68,7 @@ async def format_pending_list(bot: "Pianobot") -> list[list[str]]:
     pending_tomes = await bot.database.guild_tomes.get_pending()
     return [
         [
-            str(bot.get_guild(713710628258185258).get_member(discord_id).display_name),
+            bot.get_guild(713710628258185258).get_member(discord_id).display_name[:30],
             str(count),
             format_time_since(first_request)[1] + " ago"
         ]

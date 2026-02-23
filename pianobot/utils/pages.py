@@ -107,7 +107,10 @@ async def paginator(
         view = Buttons(initial_data) if len(initial_data) > 1 else None
 
     if message is None:
-        message = await ctx.send(initial_data[0], view=view)
+        if view is None:
+            message = await ctx.send(initial_data[0])
+        else:
+            message = await ctx.send(initial_data[0], view=view)
     else:
         await message.edit(content=initial_data[0], view=view)
 

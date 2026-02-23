@@ -38,8 +38,8 @@ class GuildTomeTable:
         status = await self._con.execute(
             'UPDATE guild_tomes'
             ' SET granted_at = CURRENT_TIMESTAMP'
-            ' WHERE discord_id = ('
-            '  SELECT discord_id FROM guild_tomes'
+            ' WHERE discord_id = $1 AND requested_at = ('
+            '  SELECT requested_at FROM guild_tomes'
             '  WHERE discord_id = $1 AND granted_at IS NULL AND denied_at IS NULL'
             '  ORDER BY requested_at LIMIT 1'
             ' )',
