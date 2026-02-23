@@ -13,7 +13,7 @@ from pianobot.utils.time import format_time_since
 
 class GuildTomeView(discord.ui.View):
     def __init__(self, bot: "Pianobot") -> None:
-        super().__init__()
+        super().__init__(timeout=None)
         self.add_item(GuildTomeButton(bot))
 
 
