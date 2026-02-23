@@ -36,7 +36,7 @@ class GuildTomeButton(discord.ui.Button[GuildTomeView]):
             )
             return
         last_request = await self.bot.database.guild_tomes.last_requested_for(discord_id)
-        if last_request and last_request.strftime() + timedelta(days=7) > datetime.now(timezone.utc):
+        if last_request and last_request + timedelta(days=7) > datetime.now(timezone.utc):
             await interaction.response.send_message(
                 "You have last requested a tome less than a week ago!",
                 ephemeral=True,
@@ -49,7 +49,7 @@ class GuildTomeButton(discord.ui.Button[GuildTomeView]):
             ephemeral=True,
         )
         if self.bot.tome_log_channel:
-            start_text = "New Tome:"
+            start_text = f"{interaction.user.display_name} queued up for a guild tome.\nCurrently pending tomes:\n\n"
             await send_formatted_list(self.bot, self.bot.tome_log_channel, start_text)
 
 
@@ -72,5 +72,5 @@ async def format_pending_list(bot: "Pianobot") -> list[list[str]]:
             str(count),
             format_time_since(first_request)[1] + " ago"
         ]
-        for discord_id, (count, first_request) in pending_tomes
+        for discord_id, (count, first_request) in pending_tomes.items()
     ]

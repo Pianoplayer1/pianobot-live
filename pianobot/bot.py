@@ -3,7 +3,7 @@ from os import getenv, listdir
 
 from aiohttp import ClientSession
 from corkus import Corkus
-from discord import Intents, Message, TextChannel
+from discord import Intents, Message, Object, TextChannel
 from discord.ext.commands import Bot, when_mentioned_or
 from discord.ext.commands.errors import ExtensionFailed
 
@@ -68,6 +68,7 @@ class Pianobot(Bot):
                 except ExtensionFailed as exc:
                     self.logger.warning('Skipped %s.%s: %s', folder, extension, exc.__cause__)
         await self.tree.sync()
+        await self.tree.sync(guild=Object(713710628258185258))
 
     async def on_ready(self) -> None:
         if self.has_started:
