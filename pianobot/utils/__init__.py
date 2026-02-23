@@ -1,4 +1,4 @@
-from .discord import get_prefix
+from .discord import get_prefix, InteractionSendWrapper
 from .logger import DiscordLogHandler
 from .numbers import display, display_full, display_short
 from .pages import paginator

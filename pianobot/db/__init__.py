@@ -1,6 +1,7 @@
 from .connection import Connection
 from .guild_activity import GuildActivityTable
 from .guild_award_stats import GuildAwardStatsTable
+from .guild_tomes import GuildTomeTable
 from .guild_xp import GuildXPTable
 from .member_activity import MemberActivityTable
 from .members import MemberTable

@@ -10,6 +10,7 @@ from discord.ext.commands.errors import ExtensionFailed
 from pianobot.db.db_manager import DBManager
 from pianobot.tasks import TaskRunner
 from pianobot.utils import DiscordLogHandler, get_prefix
+from pianobot.utils.guild_tomes import GuildTomeView
 
 
 class Pianobot(Bot):
@@ -20,6 +21,7 @@ class Pianobot(Bot):
     session: ClientSession
     member_update_channel: str | None
     xp_tracking_channel: str | None
+    tome_log_channel: TextChannel | None = None
     has_started: bool = False
 
     def __init__(self) -> None:
@@ -56,6 +58,9 @@ class Pianobot(Bot):
         await self.database.guild_xp.cleanup()
         self.session = ClientSession()
 
+        if tome_message_id := int(getenv('TOME_MESSAGE_ID', 0)):
+            self.add_view(GuildTomeView(self), message_id=tome_message_id)
+
         for folder in ['commands', 'events']:
             for extension in [f[:-3] for f in listdir(f'pianobot/{folder}') if f.endswith('.py')]:
                 try:
@@ -82,6 +87,12 @@ class Pianobot(Bot):
         #     self.xp_tracking_channel = xp_tracking_channel
         # elif getenv('XP_CHANNEL') is not None:
         #     self.logger.warning('XP tracking channel %s not found', getenv('XP_CHANNEL'))
+
+        tome_log_channel = self.get_channel(int(getenv('TOME_CHANNEL', 0)))
+        if isinstance(tome_log_channel, TextChannel):
+            self.tome_log_channel = tome_log_channel
+        elif getenv('TOME_CHANNEL') is not None:
+            self.logger.warning('Tome log channel %s not found', getenv('TOME_CHANNEL'))
 
         getLogger().addHandler(DiscordLogHandler(self, 1337524156530688100))
 

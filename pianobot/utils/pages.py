@@ -1,6 +1,7 @@
 from math import ceil
 
 from discord import ButtonStyle, Interaction, Message, ui
+from discord.abc import Messageable
 from discord.ext.commands import Bot, Context
 
 
@@ -67,7 +68,7 @@ class Buttons(ui.View):
 
 
 async def paginator(
-    ctx: Context[Bot],
+    ctx: Messageable,
     data: list[list[str]],
     columns: dict[str, int],
     *,
@@ -77,12 +78,27 @@ async def paginator(
     enum: bool = True,
     message: Message | None = None,
     start_descending: bool = True,
+    start_text: str | None = None,
 ) -> None:
     if revert_option:
-        ascending_data = table(columns.copy(), data, separator_rows, page_rows, enum, '(Ascending Order)')
+        ascending_data = table(
+            columns.copy(),
+            data,
+            separator_rows,
+            page_rows,
+            enum,
+            '(Ascending Order)',
+            start_text,
+        )
         data.reverse()
         descending_data = table(
-            columns, data, separator_rows, page_rows, enum, '(Descending Order)'
+            columns,
+            data,
+            separator_rows,
+            page_rows,
+            enum,
+            '(Descending Order)',
+            start_text,
         )
         initial_data = descending_data if start_descending else ascending_data
         view = Buttons(descending_data, ascending_data) if len(descending_data) > 1 else None

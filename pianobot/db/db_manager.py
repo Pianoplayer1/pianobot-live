@@ -4,6 +4,7 @@ from pianobot.db import (
     Connection,
     GuildActivityTable,
     GuildAwardStatsTable,
+    GuildTomeTable,
     GuildXPTable,
     MemberActivityTable,
     MemberTable,
@@ -13,7 +14,8 @@ from pianobot.db import (
     RaidMemberTable,
     ServerTable,
     TerritoryTable,
-    WorldTable, WarLogTable,
+    WarLogTable,
+    WorldTable,
 )
 
 
@@ -27,6 +29,7 @@ class DBManager:
         )
         self.guild_activity = GuildActivityTable(self._con)
         self.guild_award_stats = GuildAwardStatsTable(self._con)
+        self.guild_tomes = GuildTomeTable(self._con)
         self.guild_xp = GuildXPTable(self._con)
         self.member_activity = MemberActivityTable(self._con)
         self.members = MemberTable(self._con)
