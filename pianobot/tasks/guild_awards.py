@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from datetime import datetime, time, timedelta, timezone
 from logging import getLogger
+from math import ceil, sqrt
+from random import choices
 from typing import TYPE_CHECKING
 
 from discord import Embed, Webhook
@@ -99,6 +101,22 @@ async def update_for_cycle(bot: Pianobot, cycle: str, prev_cycle: str | None = N
                     await bot.database.guild_award_stats.update_xp(member.username, cycle, member.contributed_xp)
 
 
+def draw_raid_raffle_winners(entries: list[tuple[str, int]], n: int = 3) -> tuple[list[tuple[str, int]], int]:
+    entries = [(name, ceil(sqrt(amount))) for name, amount in entries]
+    total_tickets = sum(e[1] for e in entries)
+
+    winners = []
+    for _ in range(min(n, len(entries))):
+        names, weights = zip(*entries)
+        winner_name = choices(names, weights)[0]
+        for i, (name, _) in enumerate(entries):
+            if name == winner_name:
+                winners.append(entries.pop(i))
+                break
+
+    return winners, total_tickets
+
+
 async def send_results(bot: Pianobot, cycle: str, results: list[list[tuple[str, int]]]) -> None:
     embed = Embed(title=f'Final award results for promotion cycle  `{cycle}`')
     for title, code, result in zip(['Guild Raids', 'Wars', 'Guild XP'], ['gss', 'js', 'less'], results):
@@ -106,6 +124,14 @@ async def send_results(bot: Pianobot, cycle: str, results: list[list[tuple[str, 
         for i, data in enumerate(result[:9]):
             code_block += f'{i + 1}. {data[0]} (+{data[1]})\n'
         embed.add_field(name=title, value=code_block + '```', inline=False)
+
+    raffle_results, total_tickets = draw_raid_raffle_winners(results[0])
+    header = f"Total tickets: {total_tickets}"
+    code_block = f'```md\n{header}\n{"-" * len(header)}'
+    for i, name in enumerate(raffle_results[:3]):
+        code_block += f'{i + 1}. {name}\n'
+    embed.add_field(name='Raid Raffle', value=code_block + '```', inline=False)
+
     if bot.member_update_channel is not None:
         webhook = Webhook.from_url(bot.member_update_channel, session=bot.session)
         await webhook.send(embed=embed, username='Eden Awards', avatar_url='https://cdn.discordapp.com/avatars/861602324543307786/83f879567954aee29bc9fd534bc05b1f.webp')

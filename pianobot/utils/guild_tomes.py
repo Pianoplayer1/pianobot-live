@@ -49,7 +49,7 @@ class GuildTomeButton(discord.ui.Button[GuildTomeView]):
             ephemeral=True,
         )
         if self.bot.tome_log_channel:
-            start_text = f"{interaction.user.display_name} queued up for a guild tome.\nCurrently pending tomes:\n"
+            start_text = f"{interaction.user.display_name} queued up for a guild tome.\nCurrently pending tomes:"
             await send_formatted_list(self.bot, self.bot.tome_log_channel, start_text)
 
 

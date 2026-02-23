@@ -11,7 +11,7 @@ class GuildTomeTable:
         result = await self._con.query(
             'SELECT discord_id, COUNT(*), MIN(requested_at) as first_request FROM guild_tomes'
             ' WHERE granted_at IS NULL AND denied_at IS NULL'
-            ' GROUP BY discord_id ORDER BY first_request'
+            ' GROUP BY discord_id ORDER BY first_request DESC'
         )
         return {row[0]: (row[1], row[2]) for row in result}
 
@@ -51,8 +51,8 @@ class GuildTomeTable:
         status = await self._con.execute(
             'UPDATE guild_tomes'
             ' SET denied_at = CURRENT_TIMESTAMP'
-            ' WHERE discord_id = ('
-            '  SELECT discord_id FROM guild_tomes'
+            ' WHERE discord_id = $1 AND requested_at = ('
+            '  SELECT requested_at FROM guild_tomes'
             '  WHERE discord_id = $1 AND granted_at IS NULL AND denied_at IS NULL'
             '  ORDER BY requested_at LIMIT 1'
             ' )',
