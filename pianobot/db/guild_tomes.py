@@ -34,8 +34,8 @@ class GuildTomeTable:
     async def add_request(self, discord_id: int) -> None:
         await self._con.execute('INSERT INTO guild_tomes VALUES ($1)', discord_id)
 
-    async def grant(self, discord_id: int) -> None:
-        await self._con.execute(
+    async def grant(self, discord_id: int) -> bool:
+        status = await self._con.execute(
             'UPDATE guild_tomes'
             ' SET granted_at = CURRENT_TIMESTAMP'
             ' WHERE discord_id = ('
@@ -45,9 +45,10 @@ class GuildTomeTable:
             ' )',
             discord_id,
         )
+        return status == "UPDATE 1"
 
-    async def deny(self, discord_id: int) -> None:
-        await self._con.execute(
+    async def deny(self, discord_id: int) -> bool:
+        status = await self._con.execute(
             'UPDATE guild_tomes'
             ' SET denied_at = CURRENT_TIMESTAMP'
             ' WHERE discord_id = ('
@@ -57,3 +58,4 @@ class GuildTomeTable:
             ' )',
             discord_id,
         )
+        return status == "UPDATE 1"

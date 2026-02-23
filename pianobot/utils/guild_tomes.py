@@ -68,7 +68,7 @@ async def format_pending_list(bot: "Pianobot") -> list[list[str]]:
     pending_tomes = await bot.database.guild_tomes.get_pending()
     return [
         [
-            str(bot.get_guild(123).get_member(discord_id).display_name),
+            str(bot.get_guild(713710628258185258).get_member(discord_id).display_name),
             str(count),
             format_time_since(first_request)[1] + " ago"
         ]
