@@ -29,13 +29,18 @@ class GuildTomeButton(discord.ui.Button[GuildTomeView]):
 
     async def callback(self, interaction: discord.Interaction) -> None:
         discord_id = interaction.user.id
-        if await self.bot.database.guild_tomes.pending_number_for(discord_id) >= 3:
+        pending, received, last_request = await self.bot.database.guild_tomes.stats_for(discord_id)
+        if pending >= 3:
             await interaction.response.send_message(
                 "You have already queued up to three tomes!",
                 ephemeral=True,
             )
             return
-        last_request = await self.bot.database.guild_tomes.last_requested_for(discord_id)
+        if received >= 16:
+            await interaction.response.send_message(
+                "You can currently not queue up after receiving 16 tomes!",
+                ephemeral=True,
+            )
         if last_request and last_request + timedelta(days=7) > datetime.now(timezone.utc):
             await interaction.response.send_message(
                 "You have last requested a tome less than a week ago!",
@@ -54,17 +59,18 @@ class GuildTomeButton(discord.ui.Button[GuildTomeView]):
 
 
 async def send_formatted_list(bot: "Pianobot", ctx: Messageable, start_text: str) -> None:
-    columns = {"Discord Name": 35, "Amount": 8, "Requested At": 20}
+    columns = {"Discord Name": 33, "Requested": 9, "Received": 8, "Requested At": 20}
     if not (pending_tomes := await bot.database.guild_tomes.get_pending()):
         await ctx.send("None!")
 
     data = [
         [
-            bot.get_guild(682671629213368351).get_member(discord_id).display_name[:30],
-            str(count),
+            bot.get_guild(682671629213368351).get_member(discord_id).display_name.lstrip("♔♕♜♝♞♙◉ ")[:30],
+            str(requested),
+            str(received),
             format_time_since(first_request)[1] + " ago"
         ]
-        for discord_id, (count, first_request) in pending_tomes.items()
+        for discord_id, (requested, received, first_request) in pending_tomes.items()
     ]
 
     await paginator(ctx, data, columns, separator_rows=0, start_text=start_text)
