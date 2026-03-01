@@ -59,7 +59,7 @@ class GuildTomeButton(discord.ui.Button[GuildTomeView]):
 
 
 async def send_formatted_list(bot: "Pianobot", ctx: Messageable, start_text: str) -> None:
-    columns = {"Discord Name": 33, "Requested": 9, "Received": 8, "Requested At": 20}
+    columns = {"Discord Name": 34, "Requested": 10, "Received": 9, "Requested At": 20}
     if not (pending_tomes := await bot.database.guild_tomes.get_pending()):
         await ctx.send("None!")
 
