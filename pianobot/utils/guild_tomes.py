@@ -59,13 +59,13 @@ class GuildTomeButton(discord.ui.Button[GuildTomeView]):
 
 
 async def send_formatted_list(bot: "Pianobot", ctx: Messageable, start_text: str) -> None:
-    columns = {"Discord Name": 34, "Requested": 10, "Received": 9, "Requested At": 20}
+    columns = {"Discord Name": 28, "Requested": 11, "Received": 10, "Requested At": 18}
     if not (pending_tomes := await bot.database.guild_tomes.get_pending()):
-        await ctx.send("None!")
+        await ctx.send(f"{start_text} None!")
 
     data = [
         [
-            bot.get_guild(682671629213368351).get_member(discord_id).display_name.lstrip("♔♕♜♝♞♙◉ ")[:30],
+            bot.get_guild(682671629213368351).get_member(discord_id).display_name.lstrip("♔♕♜♝♞♙◉ ")[:24],
             str(requested),
             str(received),
             format_time_since(first_request)[1] + " ago"
