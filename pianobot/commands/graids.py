@@ -77,6 +77,7 @@ class GuildRaids(Cog):
                 data = [
                     [raid, str(count // 4096)]
                     for raid, count in sorted(list(raids.items()), key=lambda x: x[1])
+                    if count // 4096 > 0
                 ]
                 columns = {'Username': 22, 'Pending LE': 12}
                 await paginator(ctx, data, columns, page_rows=20, separator_rows=0, enum=False)
@@ -140,9 +141,14 @@ class GuildRaids(Cog):
                 return
             raids = await self.bot.database.raid_members.get_aspects()
             if raids:
+                now = datetime.now(timezone.utc)
                 data = [
-                    [raid, str(count // 2)]
-                    for raid, count in sorted(list(raids.items()), key=lambda x: x[1])
+                    [
+                        f'(*{name}*)' if (now - join_date) < timedelta(days=7) else name,
+                        str(count // 2),
+                    ]
+                    for name, (count, join_date) in sorted(list(raids.items()), key=lambda x: x[1])
+                    if count // 2 > 0
                 ]
                 columns = {'Username': 22, 'Pending Aspects': 17}
                 await paginator(ctx, data, columns, page_rows=20, separator_rows=0, enum=False)

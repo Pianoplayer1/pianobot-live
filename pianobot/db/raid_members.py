@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from pianobot.db import Connection
@@ -96,12 +97,12 @@ class RaidMemberTable:
         )
         return result.endswith('1')
 
-    async def get_aspects(self) -> dict[str, int]:
+    async def get_aspects(self) -> dict[str, tuple[int, datetime]]:
         result = await self._con.query(
-            'SELECT name, pending_aspects FROM members m, raid_members r'
+            'SELECT name, pending_aspects, join_date FROM members m, raid_members r'
             ' where m.uuid = r.uuid and pending_aspects > 0',
         )
-        return {row[0]: row[1] for row in result}
+        return {row[0]: (row[1], row[2]) for row in result}
 
     async def get_aspects_left(self) -> dict[UUID, int]:
         result = await self._con.query(

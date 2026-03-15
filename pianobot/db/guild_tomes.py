@@ -13,10 +13,10 @@ class GuildTomeTable:
             '   discord_id,'
             '   COUNT(*) FILTER (WHERE granted_at IS NULL AND denied_at IS NULL) AS pending_count,'
             '   COUNT(*) FILTER (WHERE granted_at IS NOT NULL) AS total_received,'
-            '   MIN(requested_at) as first_request'
+            '   MAX(requested_at) as latest_request'
             ' FROM guild_tomes GROUP BY discord_id'
             ' HAVING COUNT(*) FILTER (WHERE granted_at IS NULL AND denied_at IS NULL) > 0'
-            ' ORDER BY first_request DESC'
+            ' ORDER BY latest_request DESC'
         )
         return {row[0]: (row[1], row[2], row[3]) for row in result}
 

@@ -121,17 +121,17 @@ async def send_results(bot: Pianobot, cycle: str, results: list[list[tuple[str, 
     embed = Embed(title=f'Final award results for promotion cycle  `{cycle}`')
     for title, code, result in zip(['Guild Raids', 'Wars', 'Guild XP'], ['gss', 'js', 'less'], results):
         code_block = f'```{code}\n'
-        for i, (name, amount) in enumerate(result[:9]):
+        for i, (name, amount) in enumerate(result[:9], start=1):
             if amount == 0:
                 break
-            code_block += f'{i + 1}. {name} (+{amount})\n'
+            code_block += f'{i}. {name} (+{amount})\n'
         embed.add_field(name=title, value=code_block + '```', inline=False)
 
     raffle_results, total_tickets = draw_raid_raffle_winners(results[0])
     header = f"Total tickets: {total_tickets}"
     code_block = f'```md\n{header}\n{"-" * len(header)}\n'
-    for i, (name, tickets, amount) in enumerate(raffle_results[:5]):
-        code_block += f'{i + 1}. {name} ({amount} tickets, {amount} raids)\n'
+    for i, (name, tickets, amount) in enumerate(raffle_results[:5], start=1):
+        code_block += f'{i}. {name} ({tickets} tickets, {amount} raids)\n'
     embed.add_field(name='Raid Raffle', value=code_block + '```', inline=False)
 
     if bot.member_update_channel is not None:
