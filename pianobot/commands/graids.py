@@ -144,7 +144,7 @@ class GuildRaids(Cog):
                 now = datetime.now(timezone.utc)
                 data = [
                     [
-                        f'(*{name}*)' if (now - join_date) < timedelta(days=7) else name,
+                        f'(* {name} *)' if (now - join_date) < timedelta(days=7) else name,
                         str(count // 2),
                     ]
                     for name, (count, join_date) in sorted(list(raids.items()), key=lambda x: x[1])
