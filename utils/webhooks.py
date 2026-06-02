@@ -252,7 +252,7 @@ async def send_territory_change(
     embed = Embed(
         color=0x00AA00 if captured else 0xAA0000,
         title=":crossed_swords:   Territory " + ("captured" if captured else "lost"),
-        description=escape_markdown(
+        description=(
             f"{old_guild or 'Unclaimed'} ({old_count})\n"
             f":arrow_forward:  {new_guild or 'Unclaimed'} ({new_count})"
         ),

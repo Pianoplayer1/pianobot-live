@@ -31,7 +31,7 @@ class GuildMember(BaseModel):
     wars: int = Field(default=0, validation_alias=AliasPath("globalData", "wars"))
     raid_counts: dict[str, int] = Field(
         default_factory=dict,
-        validation_alias=AliasPath("globalData", "guildRaids", "list"),
+        validation_alias=AliasPath("globalData", "currentGuildRaids", "list"),
     )
     total_level: int | None = Field(
         default=None, validation_alias=AliasPath("globalData", "totalLevel")
