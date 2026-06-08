@@ -5,19 +5,19 @@ description = "Utility bot for the Discord server of the Wynncraft Eden guild"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "aiohttp>=3.13.5",
+    "aiohttp>=3.14.1",
     "asyncpg>=0.31.0",
     "discord-py>=2.7.1",
     "matplotlib>=3.10.9",
-    "pydantic>=2.13.3",
+    "pydantic>=2.13.4",
 ]
 
 [dependency-groups]
 dev = [
     "asyncpg-stubs>=0.31.2",
-    "mypy>=1.20.2",
+    "mypy>=2.1.0",
     "pre-commit>=4.6.0",
-    "ruff>=0.15.12",
+    "ruff>=0.15.16",
 ]
 
 [tool.ruff.lint]

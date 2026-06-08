@@ -1,5 +1,5 @@
 # First, build the application in the `/app` directory.
-FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS builder
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS builder
 
 # Enable bytecode compilation
 ENV UV_COMPILE_BYTECODE=1
@@ -31,7 +31,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 
 # Then, use a final image without uv
-FROM python:3.13-slim-bookworm
+FROM python:3.12-slim-bookworm
 
 # Setup a non-root user
 RUN groupadd --system --gid 999 nonroot \
