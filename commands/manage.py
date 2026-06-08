@@ -41,6 +41,10 @@ class _TomeGroup(app_commands.Group, name="tome"):
     @app_commands.command()
     async def list(self, interaction: Interaction) -> None:
         """Show all Discord members currently in the tome queue."""
+        if (guild := interaction.guild) is None:
+            await interaction.response.send_message("Cannot be used in DMs.")
+            return
+
         await interaction.response.defer(thinking=True, ephemeral=True)
         pending = await tomes.pending(self.bot.pool)
         if not pending:
@@ -48,8 +52,7 @@ class _TomeGroup(app_commands.Group, name="tome"):
             return
         lines: list[str] = []
         for discord_id, (p_count, granted, latest) in pending.items():
-            member = interaction.guild and interaction.guild.get_member(discord_id)
-            if member is None:
+            if (member := guild.get_member(discord_id)) is None:
                 continue
             name = member.display_name
             ts = format_dt(latest, style="R") if latest else "?"
