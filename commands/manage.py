@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Literal
 from uuid import UUID
 
 from asyncpg import Pool
-from discord import Interaction, Member, app_commands
+from discord import DiscordException, Interaction, Member, app_commands
 from discord.utils import format_dt
 
 from database import eden, players, tomes
@@ -50,9 +50,12 @@ class _TomeGroup(app_commands.Group, name="tome"):
         if not pending:
             await interaction.followup.send("The tome queue is empty.")
             return
+
         lines: list[str] = []
         for discord_id, (p_count, granted, latest) in pending.items():
-            if (member := guild.get_member(discord_id)) is None:
+            try:
+                member = await guild.fetch_member(discord_id)
+            except DiscordException:
                 continue
             name = member.display_name
             ts = format_dt(latest, style="R") if latest else "?"
