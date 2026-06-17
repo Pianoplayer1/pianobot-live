@@ -53,5 +53,5 @@ USER nonroot
 # Use `/app` as the working directory
 WORKDIR /app
 
-# Run the FastAPI application by default
+# Run the application
 CMD ["python", "client.py"]
